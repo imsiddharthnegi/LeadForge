@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowUpRight, KeyRound } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 
 const phrases = [
   "Discover enterprise clients.",
@@ -38,9 +38,7 @@ function useTypewriter(words: string[], speed = 55, pause = 1600) {
   return text;
 }
 
-interface Props { onOpenKey: () => void }
-
-export function HeroStrip({ onOpenKey }: Props) {
+export function HeroStrip() {
   const t = useTypewriter(phrases);
   const heroWords = "AI-powered B2B lead intelligence, in seconds.".split(" ");
 
@@ -74,12 +72,6 @@ export function HeroStrip({ onOpenKey }: Props) {
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
           className="flex items-center gap-2"
         >
-          <button
-            onClick={onOpenKey}
-            className="group flex items-center gap-1.5 px-3.5 h-9 rounded-lg text-xs font-medium text-[hsl(var(--text-secondary))] hover:text-foreground border border-white/[0.07] hover:border-white/15 transition-all bg-white/[0.02]"
-          >
-            <KeyRound size={13} /> API Key
-          </button>
           <button className="group relative flex items-center gap-1.5 px-4 h-9 rounded-lg text-xs font-semibold bg-gradient-brand text-black overflow-hidden">
             <span className="relative z-10">Deploy</span>
             <ArrowUpRight size={13} className="relative z-10 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />

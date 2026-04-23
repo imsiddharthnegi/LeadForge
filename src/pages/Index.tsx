@@ -136,7 +136,7 @@ const Index = () => {
 
       {/* Main column */}
       <div className="relative md:ml-16 z-10">
-        <HeroStrip onOpenKey={() => setKeyModalOpen(true)} />
+        <HeroStrip />
 
         <main className="px-6 lg:px-10 pb-20 pt-4">
           <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-6 lg:gap-7">
