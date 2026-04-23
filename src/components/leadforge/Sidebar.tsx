@@ -1,18 +1,20 @@
 import { LayoutDashboard, Sparkles, Bookmark, BarChart3, Settings } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 
 const items = [
-  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { id: "generate", label: "Generate", icon: Sparkles, active: true },
-  { id: "saved", label: "Saved Leads", icon: Bookmark },
-  { id: "analytics", label: "Analytics", icon: BarChart3 },
-  { id: "settings", label: "Settings", icon: Settings },
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, to: "/dashboard" },
+  { id: "generate", label: "Generate", icon: Sparkles, to: "/" },
+  { id: "saved", label: "Saved Leads", icon: Bookmark, to: "/saved" },
+  { id: "analytics", label: "Analytics", icon: BarChart3, to: "/analytics" },
+  { id: "settings", label: "Settings", icon: Settings, to: "/settings" },
 ];
 
 export function Sidebar() {
   const [hover, setHover] = useState(false);
   const expanded = hover;
+  const location = useLocation();
 
   return (
     <motion.aside
@@ -48,10 +50,11 @@ export function Sidebar() {
       <nav className="flex flex-col gap-1 flex-1">
         {items.map((it) => {
           const Icon = it.icon;
-          const isActive = !!it.active;
+          const isActive = location.pathname === it.to;
           return (
-            <button
+            <NavLink
               key={it.id}
+              to={it.to}
               className={`group relative flex items-center gap-3 px-2.5 h-10 rounded-lg transition-colors ${
                 isActive ? "text-foreground" : "text-[hsl(var(--text-secondary))] hover:text-foreground"
               }`}
@@ -78,23 +81,23 @@ export function Sidebar() {
                   {it.label}
                 </motion.span>
               )}
-            </button>
+            </NavLink>
           );
         })}
       </nav>
 
-      {/* User */}
+      {/* Brand footer */}
       <div className="flex items-center gap-3 px-1.5 pt-3 mt-3 border-t border-white/[0.05]">
-        <div className="w-9 h-9 rounded-full shrink-0 bg-gradient-brand grid place-items-center text-[11px] font-bold text-black">
-          MK
+        <div className="w-9 h-9 rounded-lg shrink-0 bg-[hsl(var(--accent-cyan)/0.08)] border border-[hsl(var(--accent-cyan)/0.25)] grid place-items-center">
+          <span className="font-display font-bold text-cyan-brand text-[11px] leading-none">LF</span>
         </div>
         {expanded && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             className="flex flex-col leading-tight whitespace-nowrap"
           >
-            <span className="text-xs font-medium">Marcus Kim</span>
-            <span className="text-[10px] text-cyan-brand font-mono uppercase tracking-wider">Pro Plan</span>
+            <span className="text-xs font-medium">LeadForge</span>
+            <span className="text-[10px] text-[hsl(var(--text-muted))] font-mono uppercase tracking-wider">v2.4.1</span>
           </motion.div>
         )}
       </div>
