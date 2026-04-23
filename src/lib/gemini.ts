@@ -29,7 +29,7 @@ export interface GenerateParams {
   enrich: { linkedin: boolean; tech: boolean; funding: boolean };
 }
 
-const KEY_STORAGE = "leadforge_gemini_key";
+const KEY_STORAGE = "groq_api_key";
 
 export function getApiKey(): string | null {
   try { return localStorage.getItem(KEY_STORAGE); } catch { return null; }
@@ -79,20 +79,29 @@ function stripFences(text: string): string {
 
 export async function generateLeads(params: GenerateParams, apiKey: string): Promise<Lead[]> {
   const prompt = buildPrompt(params);
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const url = "https://api.groq.com/openai/v1/chat/completions";
   const res = await fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
+    headers: {
+      "Authorization": `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "llama-3.3-70b-versatile",
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 4000,
+      temperature: 0.7,
+    }),
   });
   if (!res.ok) {
     const errText = await res.text().catch(() => "");
     if (res.status === 429) throw new Error("Rate limit hit. Please wait a moment and try again.");
-    if (res.status === 400 || res.status === 403) throw new Error("Invalid API key or request rejected by Gemini.");
-    throw new Error(`Gemini error ${res.status}: ${errText.slice(0, 140)}`);
+    if (res.status === 401 || res.status === 403) throw new Error("Invalid API key or request rejected by Groq.");
+    if (res.status === 400) throw new Error("Request rejected by Groq.");
+    throw new Error(`Groq error ${res.status}: ${errText.slice(0, 140)}`);
   }
   const data = await res.json();
-  const text: string | undefined = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  const text: string | undefined = data?.choices?.[0]?.message?.content;
   if (!text) throw new Error("Empty response from AI.");
   const cleaned = stripFences(text);
   let parsed: Lead[];
