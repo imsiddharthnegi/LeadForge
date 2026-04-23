@@ -68,16 +68,6 @@ export function HeroStrip() {
           <span className="text-cyan-brand">1,500 free / day</span>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
-          className="flex items-center gap-2"
-        >
-          <button className="group relative flex items-center gap-1.5 px-4 h-9 rounded-lg text-xs font-semibold bg-gradient-brand text-black overflow-hidden">
-            <span className="relative z-10">Deploy</span>
-            <ArrowUpRight size={13} className="relative z-10 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-            <span className="absolute inset-0 bg-white/0 group-hover:bg-white/15 transition-colors" />
-          </button>
-        </motion.div>
       </div>
 
       {/* Subline */}
