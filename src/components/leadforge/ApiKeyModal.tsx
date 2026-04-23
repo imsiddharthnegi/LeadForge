@@ -47,28 +47,28 @@ export function ApiKeyModal({ open, onClose, onSaved }: Props) {
               <KeyRound size={20} className="text-cyan-brand" />
             </div>
 
-            <h3 className="font-display text-xl font-semibold">Connect your Gemini key</h3>
+            <h3 className="font-display text-xl font-semibold">Connect your Groq key</h3>
             <p className="mt-1.5 text-sm text-[hsl(var(--text-secondary))] leading-relaxed">
-              LeadForge calls Google's Gemini API directly from your browser. Your key is stored only in <span className="font-mono text-cyan-brand">localStorage</span> on this device.
+              LeadForge calls the Groq API directly from your browser. Your key is stored only in <span className="font-mono text-cyan-brand">localStorage</span> on this device.
             </p>
 
             <ol className="mt-5 space-y-2 text-sm text-[hsl(var(--text-secondary))]">
               <li className="flex gap-2.5"><span className="font-mono text-cyan-brand text-xs mt-0.5">01</span>
-                <a href="https://aistudio.google.com/apikey" target="_blank" rel="noreferrer"
+                <a href="https://console.groq.com/keys" target="_blank" rel="noreferrer"
                    className="inline-flex items-center gap-1 text-foreground hover:text-cyan-brand">
-                  Open Google AI Studio <ExternalLink size={11} />
+                  Open Groq Console <ExternalLink size={11} />
                 </a>
               </li>
-              <li className="flex gap-2.5"><span className="font-mono text-cyan-brand text-xs mt-0.5">02</span>Click "Create API key" and copy it.</li>
+              <li className="flex gap-2.5"><span className="font-mono text-cyan-brand text-xs mt-0.5">02</span>Click "Create API Key" and copy it.</li>
               <li className="flex gap-2.5"><span className="font-mono text-cyan-brand text-xs mt-0.5">03</span>Paste it below — that's it.</li>
             </ol>
 
             <div className="mt-5">
-              <label className="block text-[11px] uppercase tracking-wider text-[hsl(var(--text-secondary))] mb-1.5 font-mono">Gemini API Key</label>
+              <label className="block text-[11px] uppercase tracking-wider text-[hsl(var(--text-secondary))] mb-1.5 font-mono">Groq API Key</label>
               <input
                 value={val}
                 onChange={(e) => setVal(e.target.value)}
-                placeholder="AIza..."
+                placeholder="gsk_..."
                 type="password"
                 className="w-full h-11 px-3.5 rounded-lg bg-white/[0.025] border border-white/[0.08] text-sm font-mono focus:outline-none focus:border-cyan-brand/50"
                 onKeyDown={(e) => e.key === "Enter" && save()}
