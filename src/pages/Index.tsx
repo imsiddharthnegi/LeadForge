@@ -155,20 +155,80 @@ const Index = () => {
                 ) : error ? (
                   <motion.div
                     key="error"
-                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                    className="glass rounded-2xl p-8 min-h-[400px] flex flex-col items-center justify-center text-center"
+                    initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ type: "spring", stiffness: 220, damping: 22 }}
+                    className="relative rounded-2xl p-10 min-h-[400px] flex flex-col items-center justify-center text-center overflow-hidden glass"
+                    style={{
+                      border: "1px solid hsl(var(--accent-red) / 0.35)",
+                      boxShadow:
+                        "0 0 0 1px hsl(var(--accent-red) / 0.15), 0 20px 60px -20px hsl(var(--accent-red) / 0.45), inset 0 1px 0 0 hsl(0 0% 100% / 0.05)",
+                    }}
                   >
-                    <div className="w-12 h-12 rounded-xl grid place-items-center bg-red-brand/15 border border-red-brand/30 mb-4">
-                      <AlertCircle size={20} className="text-red-brand" />
-                    </div>
-                    <h3 className="font-display text-lg font-semibold">Something didn't quite work</h3>
-                    <p className="mt-1.5 text-sm text-[hsl(var(--text-secondary))] max-w-sm">{error}</p>
-                    <button
-                      onClick={handleGenerate}
-                      className="mt-5 inline-flex items-center gap-1.5 px-4 h-10 rounded-lg bg-cyan-brand text-black font-semibold text-sm"
+                    {/* Pulsing red ambient glow */}
+                    <motion.div
+                      aria-hidden
+                      className="absolute -inset-20 pointer-events-none"
+                      style={{
+                        background:
+                          "radial-gradient(circle at 50% 50%, hsl(var(--accent-red) / 0.18), transparent 60%)",
+                        filter: "blur(40px)",
+                      }}
+                      animate={{ opacity: [0.5, 0.9, 0.5], scale: [0.95, 1.05, 0.95] }}
+                      transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+                    />
+
+                    <motion.div
+                      className="relative w-14 h-14 rounded-2xl grid place-items-center mb-5"
+                      style={{
+                        background: "hsl(var(--accent-red) / 0.12)",
+                        border: "1px solid hsl(var(--accent-red) / 0.4)",
+                        boxShadow: "0 0 30px -5px hsl(var(--accent-red) / 0.5)",
+                      }}
+                      animate={{ scale: [1, 1.06, 1] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                     >
-                      <RefreshCw size={14} /> Regenerate
-                    </button>
+                      <AlertCircle size={22} style={{ color: "hsl(var(--accent-red))" }} />
+                    </motion.div>
+
+                    <h3 className="relative font-display text-xl font-semibold tracking-tight">
+                      Something didn't quite work
+                    </h3>
+                    <p className="relative mt-2 text-sm text-[hsl(var(--text-secondary))] max-w-sm leading-relaxed">
+                      {error}
+                    </p>
+
+                    <motion.button
+                      onClick={handleGenerate}
+                      whileHover={{ scale: 1.04 }}
+                      whileTap={{ scale: 0.96 }}
+                      className="relative mt-6 inline-flex items-center gap-2 px-5 h-11 rounded-full text-sm font-semibold overflow-hidden group"
+                      style={{
+                        background:
+                          "linear-gradient(135deg, hsl(var(--accent-cyan)), hsl(var(--accent-violet)))",
+                        color: "hsl(var(--bg-void))",
+                        boxShadow: "0 10px 30px -8px hsl(var(--accent-cyan) / 0.5)",
+                      }}
+                    >
+                      <motion.span
+                        aria-hidden
+                        className="absolute inset-0"
+                        style={{
+                          background:
+                            "linear-gradient(120deg, transparent 30%, hsl(0 0% 100% / 0.35) 50%, transparent 70%)",
+                        }}
+                        animate={{ x: ["-120%", "120%"] }}
+                        transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+                      />
+                      <motion.span
+                        className="relative inline-flex"
+                        animate={{ rotate: [0, 360] }}
+                        transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
+                      >
+                        <RefreshCw size={15} />
+                      </motion.span>
+                      <span className="relative">Regenerate</span>
+                    </motion.button>
                   </motion.div>
                 ) : leads.length === 0 ? (
                   <motion.div key="empty"><EmptyState /></motion.div>

@@ -22,7 +22,8 @@ export function BackgroundCanvas() {
 
     const init = () => {
       particles.length = 0;
-      const count = Math.floor((w * h) / 14000);
+      // Always at least 80 floating particles
+      const count = Math.max(80, Math.floor((w * h) / 14000));
       for (let i = 0; i < count; i++) {
         particles.push({
           x: Math.random() * w,
@@ -39,23 +40,35 @@ export function BackgroundCanvas() {
     const draw = () => {
       ctx.clearRect(0, 0, w, h);
 
-      // wireframe sphere (orthographic projection)
+      // wireframe sphere (orthographic projection) — slow continuous rotation
       const cx = w * 0.72, cy = h * 0.5;
       const R = Math.min(w, h) * 0.3;
-      angle += 0.0015;
-      ctx.strokeStyle = "rgba(0,212,255,0.08)";
+      angle += 0.0035;
+
+      // Cyan radial glow behind globe
+      const glow = ctx.createRadialGradient(cx, cy, R * 0.1, cx, cy, R * 1.6);
+      glow.addColorStop(0, "rgba(0,212,255,0.18)");
+      glow.addColorStop(0.5, "rgba(0,212,255,0.06)");
+      glow.addColorStop(1, "rgba(0,212,255,0)");
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(cx, cy, R * 1.6, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = "rgba(0,212,255,0.14)";
       ctx.lineWidth = 1;
       const steps = 14;
-      // latitude rings
+      // latitude rings — tilt slightly with rotation for depth
+      const tilt = Math.sin(angle * 0.5) * 0.08;
       for (let i = 1; i < steps; i++) {
         const phi = (i / steps) * Math.PI - Math.PI / 2;
         const yOff = Math.sin(phi) * R;
         const rr = Math.cos(phi) * R;
         ctx.beginPath();
-        ctx.ellipse(cx, cy + yOff, rr, rr * 0.25, 0, 0, Math.PI * 2);
+        ctx.ellipse(cx, cy + yOff, rr, rr * (0.25 + tilt), 0, 0, Math.PI * 2);
         ctx.stroke();
       }
-      // longitude lines (rotating)
+      // longitude lines (continuously rotating)
       for (let i = 0; i < steps; i++) {
         const theta = (i / steps) * Math.PI + angle;
         const rx = Math.abs(Math.sin(theta)) * R;
