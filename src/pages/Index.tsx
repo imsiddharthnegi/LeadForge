@@ -1,16 +1,244 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useEffect, useMemo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Sidebar } from "@/components/leadforge/Sidebar";
+import { HeroStrip } from "@/components/leadforge/HeroStrip";
+import { InputPanel, type InputState } from "@/components/leadforge/InputPanel";
+import { TerminalLoader } from "@/components/leadforge/TerminalLoader";
+import { EmptyState } from "@/components/leadforge/EmptyState";
+import { LeadCard } from "@/components/leadforge/LeadCard";
+import { StatsBar } from "@/components/leadforge/StatsBar";
+import { ApiKeyModal } from "@/components/leadforge/ApiKeyModal";
+import { BackgroundCanvas } from "@/components/leadforge/BackgroundCanvas";
+import { generateLeads, getApiKey, type Lead } from "@/lib/gemini";
+import { Search, Download, RefreshCw, AlertCircle } from "lucide-react";
+import { toast } from "sonner";
 
-// IMPORTANT: Fully REPLACE this with your own code
-const PlaceholderIndex = () => {
-  // PLACEHOLDER: Replace this entire return statement with the user's app.
-  // The inline background color is intentionally not part of the design system.
+const SAVED_KEY = "leadforge_saved_ids";
+
+const Index = () => {
+  const [keyModalOpen, setKeyModalOpen] = useState(false);
+  const [hasKey, setHasKey] = useState<boolean>(!!getApiKey());
+  const [input, setInput] = useState<InputState>({
+    niche: "SaaS Startups",
+    location: "",
+    painPoint: "",
+    count: 8,
+    filter: "all",
+    enrich: { linkedin: true, tech: true, funding: true },
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<"score-desc" | "score-asc" | "name">("score-desc");
+  const [savedIds, setSavedIds] = useState<Set<string>>(() => {
+    try { return new Set(JSON.parse(localStorage.getItem(SAVED_KEY) || "[]")); } catch { return new Set(); }
+  });
+
+  // Show modal on first load if no key
+  useEffect(() => {
+    if (!hasKey) setKeyModalOpen(true);
+  }, [hasKey]);
+
+  const persistSaved = (s: Set<string>) => {
+    setSavedIds(new Set(s));
+    localStorage.setItem(SAVED_KEY, JSON.stringify([...s]));
+  };
+
+  const toggleSave = (id: string) => {
+    const next = new Set(savedIds);
+    if (next.has(id)) { next.delete(id); toast("Removed from saved"); }
+    else { next.add(id); toast.success("Saved to your library"); }
+    persistSaved(next);
+  };
+
+  const handleGenerate = async () => {
+    const key = getApiKey();
+    if (!key) { setKeyModalOpen(true); return; }
+    if (!input.niche) { toast.error("Pick a niche first"); return; }
+    setLoading(true); setError(null); setLeads([]);
+    try {
+      const result = await generateLeads(
+        { niche: input.niche, location: input.location, painPoint: input.painPoint, count: input.count, enrich: input.enrich },
+        key
+      );
+      setLeads(result);
+      toast.success(`Generated ${result.length} leads`);
+    } catch (e: any) {
+      const msg = e?.message || "Something went wrong";
+      setError(msg);
+      toast.error(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Filter / sort
+  const filteredLeads = useMemo(() => {
+    let out = leads.slice();
+    if (input.filter === "high") out = out.filter((l) => l.quality_score >= 75);
+    if (input.filter === "hot") out = out.filter((l) => l.quality_score >= 90);
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      out = out.filter((l) =>
+        l.company_name?.toLowerCase().includes(q) ||
+        l.contact_person?.toLowerCase().includes(q) ||
+        l.tags?.some((t) => t.toLowerCase().includes(q))
+      );
+    }
+    if (sort === "score-desc") out.sort((a, b) => b.quality_score - a.quality_score);
+    if (sort === "score-asc") out.sort((a, b) => a.quality_score - b.quality_score);
+    if (sort === "name") out.sort((a, b) => a.company_name.localeCompare(b.company_name));
+    return out;
+  }, [leads, input.filter, search, sort]);
+
+  const stats = useMemo(() => {
+    const total = leads.length;
+    const avg = total ? leads.reduce((s, l) => s + (l.quality_score || 0), 0) / total : 0;
+    return {
+      total,
+      avg,
+      high: leads.filter((l) => l.quality_score >= 75).length,
+      hot: leads.filter((l) => l.quality_score >= 90).length,
+    };
+  }, [leads]);
+
+  const exportCsv = () => {
+    if (!leads.length) return;
+    const headers = [
+      "company_name","contact_person","job_title","email","phone","website",
+      "company_size","annual_revenue","funding_stage","tech_stack","linkedin_url",
+      "quality_score","intent_signals","tags","pain_point","outreach_hook","best_contact_time"
+    ];
+    const esc = (v: any) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const rows = leads.map((l) =>
+      headers.map((h) => {
+        const v = (l as any)[h];
+        if (Array.isArray(v)) return esc(v.join("; "));
+        return esc(v);
+      }).join(",")
+    );
+    const csv = [headers.join(","), ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = `leadforge-${Date.now()}.csv`; a.click();
+    URL.revokeObjectURL(url);
+    toast.success("CSV exported 🎉");
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#fcfbf8' }}>
-      <img data-lovable-blank-page-placeholder="REMOVE_THIS" src="/placeholder.svg" alt="Your app will live here!" />
+    <div className="min-h-screen bg-[hsl(var(--bg-void))] text-foreground relative overflow-x-hidden">
+      <BackgroundCanvas />
+
+      {/* Sidebar */}
+      <Sidebar />
+
+      {/* Main column */}
+      <div className="relative md:ml-16 z-10">
+        <HeroStrip onOpenKey={() => setKeyModalOpen(true)} />
+
+        <main className="px-6 lg:px-10 pb-20 pt-4">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-6 lg:gap-7">
+            {/* LEFT */}
+            <div>
+              <InputPanel state={input} setState={setInput} onGenerate={handleGenerate} loading={loading} />
+            </div>
+
+            {/* RIGHT */}
+            <div className="relative min-h-[480px]">
+              <AnimatePresence mode="wait">
+                {loading ? (
+                  <motion.div key="loader" exit={{ opacity: 0 }}>
+                    <TerminalLoader niche={input.niche} />
+                  </motion.div>
+                ) : error ? (
+                  <motion.div
+                    key="error"
+                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                    className="glass rounded-2xl p-8 min-h-[400px] flex flex-col items-center justify-center text-center"
+                  >
+                    <div className="w-12 h-12 rounded-xl grid place-items-center bg-red-brand/15 border border-red-brand/30 mb-4">
+                      <AlertCircle size={20} className="text-red-brand" />
+                    </div>
+                    <h3 className="font-display text-lg font-semibold">Something didn't quite work</h3>
+                    <p className="mt-1.5 text-sm text-[hsl(var(--text-secondary))] max-w-sm">{error}</p>
+                    <button
+                      onClick={handleGenerate}
+                      className="mt-5 inline-flex items-center gap-1.5 px-4 h-10 rounded-lg bg-cyan-brand text-black font-semibold text-sm"
+                    >
+                      <RefreshCw size={14} /> Regenerate
+                    </button>
+                  </motion.div>
+                ) : leads.length === 0 ? (
+                  <motion.div key="empty"><EmptyState /></motion.div>
+                ) : (
+                  <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
+                    <StatsBar total={stats.total} avg={stats.avg} high={stats.high} hot={stats.hot} />
+
+                    {/* Filter bar */}
+                    <div className="glass rounded-xl p-3 flex flex-wrap items-center gap-2">
+                      <div className="flex items-center gap-2 px-3 h-9 rounded-md bg-white/[0.025] border border-white/[0.06] flex-1 min-w-[180px]">
+                        <Search size={14} className="text-[hsl(var(--text-secondary))]" />
+                        <input
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
+                          placeholder="Search company or contact…"
+                          className="flex-1 bg-transparent text-sm focus:outline-none"
+                        />
+                      </div>
+                      <select
+                        value={sort}
+                        onChange={(e) => setSort(e.target.value as any)}
+                        className="h-9 px-3 rounded-md bg-white/[0.025] border border-white/[0.06] text-xs font-mono focus:outline-none focus:border-cyan-brand/50"
+                      >
+                        <option value="score-desc">Score ↓</option>
+                        <option value="score-asc">Score ↑</option>
+                        <option value="name">Name A–Z</option>
+                      </select>
+                      <button
+                        onClick={exportCsv}
+                        className="inline-flex items-center gap-1.5 px-3 h-9 rounded-md bg-cyan-brand/10 hover:bg-cyan-brand/20 border border-cyan-brand/30 text-cyan-brand text-xs font-medium transition-colors"
+                      >
+                        <Download size={13} /> Export CSV
+                      </button>
+                      <span className="text-[10px] font-mono text-[hsl(var(--text-muted))] ml-auto">
+                        {filteredLeads.length} of {leads.length}
+                      </span>
+                    </div>
+
+                    {/* Cards */}
+                    <div className="space-y-4">
+                      {filteredLeads.map((l, i) => (
+                        <LeadCard
+                          key={l._id}
+                          lead={l}
+                          index={i}
+                          saved={savedIds.has(l._id!)}
+                          onToggleSave={() => toggleSave(l._id!)}
+                        />
+                      ))}
+                      {filteredLeads.length === 0 && (
+                        <div className="glass rounded-xl p-8 text-center text-sm text-[hsl(var(--text-secondary))]">
+                          No leads match your filters.
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+        </main>
+      </div>
+
+      <ApiKeyModal
+        open={keyModalOpen}
+        onClose={() => setKeyModalOpen(false)}
+        onSaved={() => { setHasKey(true); toast.success("API key saved"); }}
+      />
     </div>
   );
 };
-
-const Index = PlaceholderIndex;
 
 export default Index;
