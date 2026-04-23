@@ -29,16 +29,10 @@ export interface GenerateParams {
   enrich: { linkedin: boolean; tech: boolean; funding: boolean };
 }
 
-const KEY_STORAGE = "groq_api_key";
+export const GROQ_API_KEY = "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";
 
-export function getApiKey(): string | null {
-  try { return localStorage.getItem(KEY_STORAGE); } catch { return null; }
-}
-export function setApiKey(key: string) {
-  try { localStorage.setItem(KEY_STORAGE, key); } catch {}
-}
-export function clearApiKey() {
-  try { localStorage.removeItem(KEY_STORAGE); } catch {}
+export function getApiKey(): string {
+  return GROQ_API_KEY;
 }
 
 function buildPrompt(p: GenerateParams) {
@@ -77,7 +71,7 @@ function stripFences(text: string): string {
   return t.trim();
 }
 
-export async function generateLeads(params: GenerateParams, apiKey: string): Promise<Lead[]> {
+export async function generateLeads(params: GenerateParams, apiKey: string = GROQ_API_KEY): Promise<Lead[]> {
   const prompt = buildPrompt(params);
   const url = "https://api.groq.com/openai/v1/chat/completions";
   const res = await fetch(url, {
