@@ -80,7 +80,7 @@ export async function generateLeads(params: GenerateParams, apiKey: string = "")
     throw new Error("No Gemini API key provided. Please set your API key in settings.");
   }
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(finalApiKey)}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${encodeURIComponent(finalApiKey)}`;
   
   const res = await fetch(url, {
     method: "POST",
@@ -106,7 +106,7 @@ export async function generateLeads(params: GenerateParams, apiKey: string = "")
 
   if (!res.ok) {
     const errText = await res.text().catch(() => "");
-    if (res.status === 429) throw new Error("Rate limit hit. Please wait a moment and try again.");
+    if (res.status === 429) throw new Error("Rate limit reached. Please wait a moment and try again.");
     if (res.status === 401 || res.status === 403) throw new Error("Invalid API key or request rejected by Gemini.");
     if (res.status === 400) throw new Error("Request rejected by Gemini.");
     throw new Error(`Gemini error ${res.status}: ${errText.slice(0, 140)}`);

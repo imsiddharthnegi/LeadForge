@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Globe } from "lucide-react";
 import { NicheSelector } from "./NicheSelector";
@@ -38,6 +38,17 @@ const PAIN_MAX = 280;
 export function InputPanel({ state, setState, onGenerate, loading }: Props) {
   const [locFocus, setLocFocus] = useState(false);
   const [btnTilt, setBtnTilt] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && state.niche && !loading) {
+        e.preventDefault();
+        onGenerate();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [state.niche, loading, onGenerate]);
 
   const update = <K extends keyof InputState>(k: K, v: InputState[K]) =>
     setState({ ...state, [k]: v });
