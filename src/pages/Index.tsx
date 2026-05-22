@@ -7,6 +7,8 @@ import { LeadCard } from "@/components/leadforge/LeadCard";
 import { LeadCardSkeleton } from "@/components/leadforge/LeadCardSkeleton";
 import { ProgressIndicator } from "@/components/leadforge/ProgressIndicator";
 import { StatsBar } from "@/components/leadforge/StatsBar";
+import { HowItWorks } from "@/components/leadforge/HowItWorks";
+import { Footer } from "@/components/leadforge/Footer";
 import { generateLeads, type Lead } from "@/lib/gemini";
 import { Search, Download, RefreshCw, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
@@ -126,7 +128,7 @@ const Index = () => {
   return (
     <>
       <HeroStrip />
-      <main className="px-6 lg:px-10 pb-20 pt-4">
+      <main className="px-4 sm:px-6 lg:px-10 pb-20 pt-4">
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-6 lg:gap-7">
           <div>
             <InputPanel state={input} setState={setInput} onGenerate={handleGenerate} loading={loading} />
@@ -251,6 +253,8 @@ const Index = () => {
           </div>
         </div>
       </main>
+      {leads.length === 0 && <HowItWorks />}
+      <Footer />
     </>
   );
 };
