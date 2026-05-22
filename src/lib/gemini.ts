@@ -29,10 +29,11 @@ export interface GenerateParams {
   enrich: { linkedin: boolean; tech: boolean; funding: boolean };
 }
 
-export const GROQ_API_KEY = "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";
-
 export function getApiKey(): string {
-  return GROQ_API_KEY;
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("gemini_api_key") || "";
+  }
+  return "";
 }
 
 function buildPrompt(p: GenerateParams) {
@@ -71,32 +72,50 @@ function stripFences(text: string): string {
   return t.trim();
 }
 
-export async function generateLeads(params: GenerateParams, apiKey: string = GROQ_API_KEY): Promise<Lead[]> {
+export async function generateLeads(params: GenerateParams, apiKey: string = ""): Promise<Lead[]> {
   const prompt = buildPrompt(params);
-  const url = "https://api.groq.com/openai/v1/chat/completions";
+  const finalApiKey = apiKey || getApiKey();
+  
+  if (!finalApiKey) {
+    throw new Error("No Gemini API key provided. Please set your API key in settings.");
+  }
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(finalApiKey)}`;
+  
   const res = await fetch(url, {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${apiKey}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "llama-3.3-70b-versatile",
-      messages: [{ role: "user", content: prompt }],
-      max_tokens: 4000,
-      temperature: 0.7,
+      contents: [
+        {
+          parts: [
+            {
+              text: prompt,
+            },
+          ],
+        },
+      ],
+      generationConfig: {
+        maxOutputTokens: 4000,
+        temperature: 0.7,
+      },
     }),
   });
+
   if (!res.ok) {
     const errText = await res.text().catch(() => "");
     if (res.status === 429) throw new Error("Rate limit hit. Please wait a moment and try again.");
-    if (res.status === 401 || res.status === 403) throw new Error("Invalid API key or request rejected by Groq.");
-    if (res.status === 400) throw new Error("Request rejected by Groq.");
-    throw new Error(`Groq error ${res.status}: ${errText.slice(0, 140)}`);
+    if (res.status === 401 || res.status === 403) throw new Error("Invalid API key or request rejected by Gemini.");
+    if (res.status === 400) throw new Error("Request rejected by Gemini.");
+    throw new Error(`Gemini error ${res.status}: ${errText.slice(0, 140)}`);
   }
+
   const data = await res.json();
-  const text: string | undefined = data?.choices?.[0]?.message?.content;
+  const text: string | undefined = data?.candidates?.[0]?.content?.parts?.[0]?.text;
   if (!text) throw new Error("Empty response from AI.");
+  
   const cleaned = stripFences(text);
   let parsed: Lead[];
   try {

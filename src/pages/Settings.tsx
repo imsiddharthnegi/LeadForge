@@ -1,4 +1,5 @@
 import { useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import { PageHeader } from "@/components/leadforge/PageHeader";
 import { User, KeyRound, Sliders, Eye, EyeOff, Check } from "lucide-react";
@@ -74,8 +75,15 @@ function Toggle({ value, onChange, label, hint }: {
 export default function SettingsPage() {
   const [name, setName] = useState("Marcus Kim");
   const [email, setEmail] = useState("marcus@leadforge.app");
+  const [geminiKey, setGeminiKey] = useState("");
   const [showKey, setShowKey] = useState(false);
   const [prefs, setPrefs] = useState({ emailNotifications: true, autoSave: false, darkMode: true });
+
+  // Load API key from localStorage on mount
+  React.useEffect(() => {
+    const savedKey = localStorage.getItem("gemini_api_key") || "";
+    setGeminiKey(savedKey);
+  }, []);
 
   return (
     <>
@@ -103,31 +111,28 @@ export default function SettingsPage() {
         </Section>
 
         <Section icon={KeyRound} eyebrow="Credentials" title="API Configuration" delay={0.08}>
-          <Field label="Groq API Key">
+          <Field label="Gemini API Key">
             <div className="flex items-center gap-2">
-              <div className="flex-1 flex items-center gap-2 h-11 px-3.5 rounded-lg bg-white/[0.025] border border-white/[0.07] font-mono text-sm">
-                <KeyRound size={14} className="text-cyan-brand shrink-0" />
-                <span className="truncate">
-                  {showKey ? "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" : "gsk_••••••••••••••••••••••••••••"}
-                </span>
-                <button
-                  onClick={() => setShowKey((v) => !v)}
-                  className="ml-auto text-[hsl(var(--text-secondary))] hover:text-foreground transition-colors"
-                  aria-label="Toggle key visibility"
-                >
-                  {showKey ? <EyeOff size={14} /> : <Eye size={14} />}
-                </button>
-              </div>
+              <input
+                type="text"
+                value={geminiKey}
+                onChange={(e) => setGeminiKey(e.target.value)}
+                placeholder="AIza••••••••••••••••••••••••••"
+                className="flex-1 h-11 px-3.5 rounded-lg bg-white/[0.025] border border-white/[0.07] font-mono text-sm focus:outline-none focus:border-cyan-brand/50 transition-colors"
+              />
               <button
-                onClick={() => toast("Key updates are managed by your administrator")}
+                onClick={() => {
+                  localStorage.setItem("gemini_api_key", geminiKey);
+                  toast.success("Gemini API Key saved to localStorage");
+                }}
                 className="h-11 px-4 rounded-lg bg-gradient-to-r from-[hsl(var(--accent-cyan))] to-[hsl(var(--accent-violet))] text-black font-semibold text-xs whitespace-nowrap"
                 style={{ boxShadow: "0 8px 24px -8px hsl(var(--accent-cyan) / 0.5)" }}
               >
-                Update Key
+                Save Key
               </button>
             </div>
             <p className="mt-2 text-[11px] text-[hsl(var(--text-muted))] font-mono">
-              Connected to Groq · llama-3.3-70b-versatile · status: <span className="text-[hsl(var(--accent-green))]">active</span>
+              Connected to Gemini · gemini-2.0-flash · status: <span className="text-[hsl(var(--accent-green))]">active</span>
             </p>
           </Field>
         </Section>
