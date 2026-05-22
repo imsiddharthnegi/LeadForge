@@ -51,7 +51,7 @@ export function Sidebar() {
                 v1.0
               </span>
             </div>
-            <span className="text-[10px] font-mono text-[hsl(var(--text-muted))] tracking-wide">Powered by Gemini AI</span>
+            <span className="text-[10px] font-mono text-[hsl(var(--text-muted))] tracking-wide">Powered by Groq AI</span>
           </motion.div>
         )}
       </div>

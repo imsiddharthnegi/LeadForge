@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 export function ApiKeyBanner() {
   const [dismissed, setDismissed] = useState(false);
   const navigate = useNavigate();
-  const hasKey = !!localStorage.getItem("gemini_api_key");
+  const hasKey = !!localStorage.getItem("groq_api_key");
 
   if (hasKey || dismissed) return null;
 
@@ -20,7 +20,7 @@ export function ApiKeyBanner() {
     >
       <AlertCircle size={16} className="text-amber-brand shrink-0" />
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-medium text-amber-brand">Gemini API key required</p>
+        <p className="text-xs font-medium text-amber-brand">Groq API key required</p>
         <p className="text-[11px] text-amber-brand/80 mt-0.5">Add your API key in Settings to generate leads</p>
       </div>
       <button
