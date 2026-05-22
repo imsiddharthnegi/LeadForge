@@ -41,12 +41,18 @@ export function Sidebar() {
           />
         </div>
         {expanded && (
-          <motion.span
+          <motion.div
             initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }}
-            className="font-display text-base font-semibold tracking-tight whitespace-nowrap"
+            className="flex flex-col gap-0.5"
           >
-            LeadForge
-          </motion.span>
+            <div className="flex items-center gap-2">
+              <span className="font-display text-base font-semibold tracking-tight whitespace-nowrap">LeadForge</span>
+              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-mono font-bold tracking-wider bg-cyan-brand/15 text-cyan-brand border border-cyan-brand/30">
+                v1.0
+              </span>
+            </div>
+            <span className="text-[10px] font-mono text-[hsl(var(--text-muted))] tracking-wide">Powered by Gemini AI</span>
+          </motion.div>
         )}
       </div>
 
@@ -100,8 +106,8 @@ export function Sidebar() {
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             className="flex flex-col leading-tight whitespace-nowrap"
           >
-            <span className="text-xs font-medium">LeadForge</span>
-            <span className="text-[10px] text-[hsl(var(--text-muted))] font-mono uppercase tracking-wider">v2.4.1</span>
+            <span className="text-xs font-medium">LeadForge v1.0</span>
+            <span className="text-[10px] text-[hsl(var(--text-muted))] font-mono uppercase tracking-wider">AI Lead Intelligence</span>
           </motion.div>
         )}
       </div>
