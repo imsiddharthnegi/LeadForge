@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Outlet, useLocation } from "react-router-dom";
 import { Sidebar } from "./Sidebar";
 import { BackgroundCanvas } from "./BackgroundCanvas";
+import { ApiKeyBanner } from "./ApiKeyBanner";
 
 export function AppLayout() {
   const location = useLocation();
@@ -10,6 +11,7 @@ export function AppLayout() {
       <BackgroundCanvas />
       <Sidebar />
       <div className="relative md:ml-16 z-10">
+        <ApiKeyBanner />
         <motion.div
           key={location.pathname}
           initial={{ opacity: 0, y: 8 }}

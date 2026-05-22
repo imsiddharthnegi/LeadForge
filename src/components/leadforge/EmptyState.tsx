@@ -65,9 +65,9 @@ export function EmptyState() {
           )}
         </svg>
 
-        <h3 className="font-display text-xl font-semibold">Your leads will appear here</h3>
+        <h3 className="font-display text-xl font-semibold">No leads yet</h3>
         <p className="mt-2 text-sm text-[hsl(var(--text-secondary))] max-w-xs mx-auto">
-          Set your target parameters on the left and let the intelligence engine surface buyers ready to talk.
+          Enter a niche and location above to generate your first leads
         </p>
 
         <div className="mt-6 flex items-center gap-2 justify-center text-[11px] font-mono text-[hsl(var(--text-muted))]">

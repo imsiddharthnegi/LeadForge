@@ -2,10 +2,10 @@ import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HeroStrip } from "@/components/leadforge/HeroStrip";
 import { InputPanel, type InputState } from "@/components/leadforge/InputPanel";
-import { TerminalLoader } from "@/components/leadforge/TerminalLoader";
 import { EmptyState } from "@/components/leadforge/EmptyState";
 import { LeadCard } from "@/components/leadforge/LeadCard";
 import { LeadCardSkeleton } from "@/components/leadforge/LeadCardSkeleton";
+import { ProgressIndicator } from "@/components/leadforge/ProgressIndicator";
 import { StatsBar } from "@/components/leadforge/StatsBar";
 import { generateLeads, type Lead } from "@/lib/gemini";
 import { Search, Download, RefreshCw, AlertCircle } from "lucide-react";
@@ -126,8 +126,9 @@ const Index = () => {
             <AnimatePresence mode="wait">
               {loading ? (
                 <motion.div key="loader" exit={{ opacity: 0 }} className="space-y-5">
+                  <ProgressIndicator />
                   <div className="space-y-4">
-                    {Array(3)
+                    {Array(4)
                       .fill(0)
                       .map((_, i) => (
                         <LeadCardSkeleton key={i} index={i} />
