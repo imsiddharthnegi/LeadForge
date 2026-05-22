@@ -80,7 +80,7 @@ export async function generateLeads(params: GenerateParams, apiKey: string = "")
     throw new Error("No Gemini API key provided. Please set your API key in settings.");
   }
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${encodeURIComponent(finalApiKey)}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(finalApiKey)}`;
   
   const res = await fetch(url, {
     method: "POST",
