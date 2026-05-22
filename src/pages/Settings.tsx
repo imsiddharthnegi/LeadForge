@@ -75,14 +75,14 @@ function Toggle({ value, onChange, label, hint }: {
 export default function SettingsPage() {
   const [name, setName] = useState("Marcus Kim");
   const [email, setEmail] = useState("marcus@leadforge.app");
-  const [geminiKey, setGeminiKey] = useState("");
+  const [groqKey, setGroqKey] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [prefs, setPrefs] = useState({ emailNotifications: true, autoSave: false, darkMode: true });
 
   // Load API key from localStorage on mount
   React.useEffect(() => {
-    const savedKey = localStorage.getItem("gemini_api_key") || "";
-    setGeminiKey(savedKey);
+    const savedKey = localStorage.getItem("groq_api_key") || "";
+    setGroqKey(savedKey);
     setIsEditing(!savedKey); // Start in edit mode if no key exists
   }, []);
 
@@ -112,23 +112,23 @@ export default function SettingsPage() {
         </Section>
 
         <Section icon={KeyRound} eyebrow="Credentials" title="API Configuration" delay={0.08}>
-          <Field label="Gemini API Key">
+          <Field label="Groq API Key">
             {isEditing ? (
               <div className="flex items-center gap-2">
                 <input
                   type="text"
-                  value={geminiKey}
-                  onChange={(e) => setGeminiKey(e.target.value)}
-                  placeholder="Paste your AIza... API key"
+                  value={groqKey}
+                  onChange={(e) => setGroqKey(e.target.value)}
+                  placeholder="Paste your gsk_... API key"
                   className="flex-1 h-11 px-3.5 rounded-lg bg-white/[0.025] border border-white/[0.07] font-mono text-sm focus:outline-none focus:border-cyan-brand/50 transition-colors"
                   autoFocus
                 />
                 <button
                   onClick={() => {
-                    if (geminiKey.trim()) {
-                      localStorage.setItem("gemini_api_key", geminiKey);
+                    if (groqKey.trim()) {
+                      localStorage.setItem("groq_api_key", groqKey);
                       setIsEditing(false);
-                      toast.success("Gemini API Key saved");
+                      toast.success("Groq API Key saved");
                     } else {
                       toast.error("Please enter a valid API key");
                     }
@@ -142,7 +142,7 @@ export default function SettingsPage() {
             ) : (
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-11 px-3.5 rounded-lg bg-white/[0.025] border border-white/[0.07] font-mono text-sm flex items-center text-[hsl(var(--text-secondary))]">
-                  {geminiKey ? `AIza${geminiKey.slice(-4).padStart(geminiKey.length, "•")}` : "No key set"}
+                  {groqKey ? `gsk_${groqKey.slice(-4).padStart(groqKey.length - 4, "•")}` : "No key set"}
                 </div>
                 <button
                   onClick={() => setIsEditing(true)}
@@ -150,11 +150,11 @@ export default function SettingsPage() {
                 >
                   Edit
                 </button>
-                {geminiKey && (
+                {groqKey && (
                   <button
                     onClick={() => {
-                      localStorage.removeItem("gemini_api_key");
-                      setGeminiKey("");
+                      localStorage.removeItem("groq_api_key");
+                      setGroqKey("");
                       setIsEditing(true);
                       toast.success("API Key removed");
                     }}
@@ -166,7 +166,7 @@ export default function SettingsPage() {
               </div>
             )}
             <p className="mt-2 text-[11px] text-[hsl(var(--text-muted))] font-mono">
-              Connected to Gemini · gemini-2.5-flash · status: <span className="text-[hsl(var(--accent-green))]">active</span>
+              Connected to Groq · llama-3.3-70b-versatile · status: <span className="text-[hsl(var(--accent-green))]">active</span>
             </p>
           </Field>
         </Section>
