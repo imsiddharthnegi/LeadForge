@@ -23,7 +23,11 @@ export function Sidebar() {
       animate={{ width: expanded ? 220 : 64 }}
       transition={{ type: "spring", stiffness: 280, damping: 30 }}
       className="hidden md:flex fixed left-0 top-0 bottom-0 z-40 flex-col py-4 px-3 glass-strong overflow-hidden"
-      style={{ borderRight: "1px solid hsl(0 0% 100% / 0.06)" }}
+      style={{ 
+        borderRight: "1px solid hsl(0 0% 100% / 0.06)",
+        borderTop: "2px solid hsl(var(--accent-cyan) / 0.4)",
+        boxShadow: "0 -10px 30px -10px hsl(var(--accent-cyan) / 0.3), var(--shadow-elevated)"
+      }}
     >
       {/* Logo */}
       <div className="flex items-center gap-3 px-2 mb-10 mt-1">

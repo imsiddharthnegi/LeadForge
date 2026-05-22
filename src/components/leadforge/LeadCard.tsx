@@ -47,14 +47,23 @@ export function LeadCard({ lead, index, saved, onToggleSave }: Props) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.08, duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
+      transition={{ delay: index * 0.08, duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
       onMouseMove={handleMove}
       onMouseLeave={() => setTilt({ x: 0, y: 0 })}
       style={{ transform: `perspective(1200px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`, transformStyle: "preserve-3d" }}
-      className="group relative glass rounded-xl p-5 lg:p-6 transition-[border-color,box-shadow] hover:border-cyan-brand/30"
+      className="group relative glass rounded-xl p-5 lg:p-6 transition-all duration-300 hover:border-cyan-brand/50"
     >
+      {/* Gradient border glow on hover */}
+      <div className="absolute -inset-px rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+           style={{
+             background: "linear-gradient(135deg, hsl(var(--accent-cyan) / 0.5), hsl(var(--accent-violet) / 0.3))",
+             zIndex: -1,
+             filter: "blur(8px)"
+           }}
+      />
+      
       <span
-        className="absolute left-0 top-4 bottom-4 w-[2px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+        className="absolute left-0 top-4 bottom-4 w-[2px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
         style={{ background: "hsl(var(--accent-cyan))", boxShadow: "0 0 10px hsl(var(--accent-cyan))" }}
       />
 
@@ -114,11 +123,11 @@ export function LeadCard({ lead, index, saved, onToggleSave }: Props) {
       {/* Contact row */}
       <div className="mt-4 flex flex-wrap gap-2">
         <button onClick={() => copy(lead.email, "Email")}
-                className="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-md text-xs bg-white/[0.03] hover:bg-cyan-brand/10 hover:text-cyan-brand border border-white/[0.06] transition-colors font-mono">
+                className="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-md text-xs bg-white/[0.03] hover:bg-cyan-brand/10 hover:text-cyan-brand border border-white/[0.06] transition-all duration-200 font-mono active:scale-95">
           <Mail size={12} /> {lead.email}
         </button>
         <button onClick={() => copy(lead.phone, "Phone")}
-                className="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-md text-xs bg-white/[0.03] hover:bg-cyan-brand/10 hover:text-cyan-brand border border-white/[0.06] transition-colors font-mono">
+                className="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-md text-xs bg-white/[0.03] hover:bg-cyan-brand/10 hover:text-cyan-brand border border-white/[0.06] transition-all duration-200 font-mono active:scale-95">
           <Phone size={12} /> {lead.phone}
         </button>
       </div>
@@ -175,7 +184,7 @@ export function LeadCard({ lead, index, saved, onToggleSave }: Props) {
         <div className="flex items-center gap-2">
           <button
             onClick={() => copy(lead.outreach_hook, "Hook")}
-            className="inline-flex items-center gap-1.5 px-3 h-8 rounded-md text-[11px] font-medium bg-white/[0.03] hover:bg-cyan-brand/10 hover:text-cyan-brand border border-white/[0.06] transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 h-8 rounded-md text-[11px] font-medium bg-white/[0.03] hover:bg-cyan-brand/10 hover:text-cyan-brand border border-white/[0.06] transition-all duration-200 active:scale-95"
           >
             <Copy size={12} /> Copy Hook
           </button>

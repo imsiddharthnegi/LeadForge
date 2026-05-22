@@ -5,6 +5,7 @@ import { InputPanel, type InputState } from "@/components/leadforge/InputPanel";
 import { TerminalLoader } from "@/components/leadforge/TerminalLoader";
 import { EmptyState } from "@/components/leadforge/EmptyState";
 import { LeadCard } from "@/components/leadforge/LeadCard";
+import { LeadCardSkeleton } from "@/components/leadforge/LeadCardSkeleton";
 import { StatsBar } from "@/components/leadforge/StatsBar";
 import { generateLeads, type Lead } from "@/lib/gemini";
 import { Search, Download, RefreshCw, AlertCircle } from "lucide-react";
@@ -124,8 +125,14 @@ const Index = () => {
           <div className="relative min-h-[480px]">
             <AnimatePresence mode="wait">
               {loading ? (
-                <motion.div key="loader" exit={{ opacity: 0 }}>
-                  <TerminalLoader niche={input.niche} />
+                <motion.div key="loader" exit={{ opacity: 0 }} className="space-y-5">
+                  <div className="space-y-4">
+                    {Array(3)
+                      .fill(0)
+                      .map((_, i) => (
+                        <LeadCardSkeleton key={i} index={i} />
+                      ))}
+                  </div>
                 </motion.div>
               ) : error ? (
                 <motion.div

@@ -40,23 +40,23 @@ export function BackgroundCanvas() {
     const draw = () => {
       ctx.clearRect(0, 0, w, h);
 
-      // wireframe sphere (orthographic projection) — slow continuous rotation
+      // wireframe sphere (orthographic projection) — slower rotation for subtlety
       const cx = w * 0.72, cy = h * 0.5;
       const R = Math.min(w, h) * 0.3;
-      angle += 0.0035;
+      angle += 0.0015;
 
-      // Cyan radial glow behind globe
+      // Cyan radial glow behind globe — slightly dimmer
       const glow = ctx.createRadialGradient(cx, cy, R * 0.1, cx, cy, R * 1.6);
-      glow.addColorStop(0, "rgba(0,212,255,0.18)");
-      glow.addColorStop(0.5, "rgba(0,212,255,0.06)");
+      glow.addColorStop(0, "rgba(0,212,255,0.12)");
+      glow.addColorStop(0.5, "rgba(0,212,255,0.04)");
       glow.addColorStop(1, "rgba(0,212,255,0)");
       ctx.fillStyle = glow;
       ctx.beginPath();
       ctx.arc(cx, cy, R * 1.6, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.strokeStyle = "rgba(0,212,255,0.14)";
-      ctx.lineWidth = 1;
+      ctx.strokeStyle = "rgba(0,212,255,0.09)";
+      ctx.lineWidth = 0.8;
       const steps = 14;
       // latitude rings — tilt slightly with rotation for depth
       const tilt = Math.sin(angle * 0.5) * 0.08;
@@ -95,12 +95,12 @@ export function BackgroundCanvas() {
         if (p.x < 0) p.x = w; if (p.x > w) p.x = 0;
         if (p.y < 0) p.y = h; if (p.y > h) p.y = 0;
 
-        ctx.fillStyle = `rgba(${p.c}, 0.55)`;
+        ctx.fillStyle = `rgba(${p.c}, 0.45)`;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fill();
         // glow
-        ctx.fillStyle = `rgba(${p.c}, 0.08)`;
+        ctx.fillStyle = `rgba(${p.c}, 0.05)`;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r * 4, 0, Math.PI * 2);
         ctx.fill();
