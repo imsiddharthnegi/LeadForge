@@ -111,7 +111,16 @@ const Index = () => {
     const a = document.createElement("a");
     a.href = url; a.download = `leadforge-${Date.now()}.csv`; a.click();
     URL.revokeObjectURL(url);
-    toast.success("CSV exported 🎉");
+    toast.success(`Exported ${leads.length} leads to CSV`);
+  };
+
+  const copyAllHooks = () => {
+    if (!leads.length) return;
+    const hooks = leads
+      .map((l, i) => `${i + 1}. "${l.outreach_hook}"`)
+      .join("\n\n");
+    navigator.clipboard.writeText(hooks);
+    toast.success(`Copied ${leads.length} hooks to clipboard`);
   };
 
   return (
@@ -196,7 +205,7 @@ const Index = () => {
                 <motion.div key="empty"><EmptyState /></motion.div>
               ) : (
                 <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
-                  <StatsBar total={stats.total} avg={stats.avg} high={stats.high} hot={stats.hot} />
+                  <StatsBar total={stats.total} avg={stats.avg} high={stats.high} hot={stats.hot} onExport={exportCsv} onCopyHooks={copyAllHooks} />
                   <div className="glass rounded-xl p-3 flex flex-wrap items-center gap-2">
                     <div className="flex items-center gap-2 px-3 h-9 rounded-md bg-white/[0.025] border border-white/[0.06] flex-1 min-w-[180px]">
                       <Search size={14} className="text-[hsl(var(--text-secondary))]" />
@@ -216,12 +225,6 @@ const Index = () => {
                       <option value="score-asc">Score ↑</option>
                       <option value="name">Name A–Z</option>
                     </select>
-                    <button
-                      onClick={exportCsv}
-                      className="inline-flex items-center gap-1.5 px-3 h-9 rounded-md bg-cyan-brand/10 hover:bg-cyan-brand/20 border border-cyan-brand/30 text-cyan-brand text-xs font-medium transition-colors"
-                    >
-                      <Download size={13} /> Export CSV
-                    </button>
                     <span className="text-[10px] font-mono text-[hsl(var(--text-muted))] ml-auto">
                       {filteredLeads.length} of {leads.length}
                     </span>
