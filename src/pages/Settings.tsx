@@ -166,7 +166,7 @@ export default function SettingsPage() {
               </div>
             )}
             <p className="mt-2 text-[11px] text-[hsl(var(--text-muted))] font-mono">
-              Connected to Gemini · gemini-2.0-flash-lite · status: <span className="text-[hsl(var(--accent-green))]">active</span>
+              Connected to Gemini · gemini-2.5-flash · status: <span className="text-[hsl(var(--accent-green))]">active</span>
             </p>
           </Field>
         </Section>
