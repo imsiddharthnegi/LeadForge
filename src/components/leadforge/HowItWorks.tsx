@@ -3,7 +3,7 @@ import { Search, Zap, Download } from "lucide-react";
 
 const steps = [
   {
-    icon: Input,
+    icon: Search,
     title: "Enter Niche",
     description: "Specify your target market and parameters",
   },
