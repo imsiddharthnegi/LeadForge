@@ -45,7 +45,7 @@ export function StatsBar({ total, avg, high, hot, onExport, onCopyHooks }: Props
             initial={{ opacity: 0, y: 12, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ delay: i * 0.07, type: "spring", stiffness: 280, damping: 22 }}
-            className="glass rounded-xl px-4 py-3"
+            className="glass-card rounded-xl px-4 py-3"
           >
             <div className="text-[10px] uppercase tracking-wider text-[hsl(var(--text-muted))] font-mono">{s.label}</div>
             <div className="font-display text-2xl font-semibold mt-1" style={{ color: s.color }}>

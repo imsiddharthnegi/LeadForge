@@ -55,7 +55,7 @@ export function InputPanel({ state, setState, onGenerate, loading }: Props) {
       initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2, duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-      className="relative glass rounded-card p-6 lg:p-8"
+      className="relative glass-card rounded-card p-6 lg:p-8"
     >
       <div className="space-y-6">
         {/* Niche + Location Row */}

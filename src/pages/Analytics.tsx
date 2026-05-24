@@ -54,7 +54,7 @@ function ChartCard({ title, eyebrow, children, delay = 0, className = "" }: {
     <motion.div
       initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
-      className={`glass rounded-2xl p-6 relative overflow-hidden ${className}`}
+      className={`glass-card rounded-2xl p-6 relative overflow-hidden ${className}`}
     >
       <div className="flex items-center justify-between mb-5">
         <div>

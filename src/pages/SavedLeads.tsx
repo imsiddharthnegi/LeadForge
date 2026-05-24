@@ -124,7 +124,7 @@ export default function SavedLeads() {
       <main className="px-6 lg:px-10 pb-20">
         <motion.div
           initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-          className="glass rounded-2xl p-3 mb-6 flex flex-wrap items-center gap-2"
+          className="glass-card rounded-2xl p-3 mb-6 flex flex-wrap items-center gap-2"
         >
           <div className="flex items-center gap-2 px-3 h-9 rounded-md bg-white/[0.025] border border-white/[0.06] flex-1 min-w-[220px]">
             <Search size={14} className="text-[hsl(var(--text-secondary))]" />
@@ -159,7 +159,7 @@ export default function SavedLeads() {
             />
           ))}
           {filtered.length === 0 && (
-            <div className="glass rounded-xl p-10 text-center text-sm text-[hsl(var(--text-secondary))]">
+            <div className="glass-card rounded-xl p-10 text-center text-sm text-[hsl(var(--text-secondary))]">
               No saved leads match your filters.
             </div>
           )}
