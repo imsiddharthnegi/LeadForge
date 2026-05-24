@@ -75,22 +75,61 @@ function Toggle({ value, onChange, label, hint }: {
 export default function SettingsPage() {
   const [name, setName] = useState("Marcus Kim");
   const [email, setEmail] = useState("marcus@leadforge.app");
-  const [groqKey, setGroqKey] = useState("");
-  const [isEditing, setIsEditing] = useState(false);
+  const [savedKey, setSavedKey] = useState("");
+  const [inputValue, setInputValue] = useState("");
+  const [isReadOnly, setIsReadOnly] = useState(false);
   const [prefs, setPrefs] = useState({ emailNotifications: true, autoSave: false, darkMode: true });
+  const inputRef = React.useRef<HTMLInputElement>(null);
 
   // Load API key from localStorage on mount
   React.useEffect(() => {
-    const savedKey = localStorage.getItem("groq_api_key") || "";
-    setGroqKey(savedKey);
-    setIsEditing(!savedKey); // Start in edit mode if no key exists
+    const storedKey = localStorage.getItem("groq_api_key") || "";
+    setSavedKey(storedKey);
+    if (storedKey) {
+      // If key exists, show masked version as readOnly
+      const lastFour = storedKey.slice(-4);
+      const masked = "•".repeat(Math.max(0, storedKey.length - 4));
+      setInputValue(`gsk_${masked}${lastFour}`);
+      setIsReadOnly(true);
+    } else {
+      // If no key, start with empty editable input
+      setInputValue("");
+      setIsReadOnly(false);
+    }
   }, []);
 
-  const maskApiKey = (key: string) => {
-    if (!key) return "No key set";
-    const lastFour = key.slice(-4);
-    const masked = "•".repeat(Math.max(0, key.length - 4));
-    return `gsk_${masked}${lastFour}`;
+  const handleEdit = () => {
+    setInputValue("");
+    setIsReadOnly(false);
+    // Focus after state update
+    setTimeout(() => inputRef.current?.focus(), 0);
+  };
+
+  const handleSaveKey = () => {
+    // Only save if user typed a new key (not the masked version)
+    if (inputValue.trim() && !inputValue.startsWith("gsk_•")) {
+      localStorage.setItem("groq_api_key", inputValue.trim());
+      setSavedKey(inputValue.trim());
+      
+      // Show masked version and make readOnly
+      const lastFour = inputValue.trim().slice(-4);
+      const masked = "•".repeat(Math.max(0, inputValue.trim().length - 4));
+      setInputValue(`gsk_${masked}${lastFour}`);
+      setIsReadOnly(true);
+      toast.success("Groq API Key saved");
+    } else if (inputValue.startsWith("gsk_•")) {
+      toast.error("Please enter a new API key");
+    } else {
+      toast.error("Please enter a valid API key");
+    }
+  };
+
+  const handleRemoveKey = () => {
+    localStorage.removeItem("groq_api_key");
+    setSavedKey("");
+    setInputValue("");
+    setIsReadOnly(false);
+    toast.success("API Key removed");
   };
 
   return (
@@ -142,60 +181,44 @@ export default function SettingsPage() {
           delay={0.15}
         >
           <Field label="Groq API Key" hint="Your API key is stored securely in your browser">
-            {isEditing ? (
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  value={groqKey}
-                  onChange={(e) => setGroqKey(e.target.value)}
-                  placeholder="Paste your gsk_... API key"
-                  className="flex-1 h-10 px-3 rounded-input bg-[hsl(var(--surface-3))] border border-white/[0.07] font-mono text-sm focus:outline-none focus:border-cyan-brand/50 focus:ring-1 focus:ring-cyan-brand/20 transition-all"
-                  autoFocus
-                />
-                <button
-                  onClick={() => {
-                    if (groqKey.trim()) {
-                      localStorage.setItem("groq_api_key", groqKey);
-                      setIsEditing(false);
-                      toast.success("Groq API Key saved");
-                    } else {
-                      toast.error("Please enter a valid API key");
-                    }
-                  }}
-                  className="h-10 px-3 rounded-input bg-cyan-brand text-black font-semibold text-xs whitespace-nowrap transition-all hover:bg-cyan-brand/90"
-                >
-                  Save
-                </button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  value={maskApiKey(groqKey)}
-                  readOnly
-                  className="flex-1 h-10 px-3 rounded-input bg-[hsl(var(--surface-3))]/50 border border-white/[0.07] font-mono text-sm text-[hsl(var(--text-secondary))] cursor-default"
-                />
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="h-10 px-3 rounded-input bg-white/[0.05] hover:bg-white/10 border border-white/[0.1] text-foreground font-semibold text-xs whitespace-nowrap transition-colors"
-                >
-                  Edit
-                </button>
-                {groqKey && (
+            <div className="flex items-center gap-2">
+              <input
+                ref={inputRef}
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                readOnly={isReadOnly}
+                placeholder="Paste your gsk_... API key"
+                className={`flex-1 h-10 px-3 rounded-input border font-mono text-sm transition-all focus:outline-none ${
+                  isReadOnly
+                    ? "bg-[hsl(var(--surface-3))]/50 border-white/[0.07] text-[hsl(var(--text-secondary))] cursor-default"
+                    : "bg-[hsl(var(--surface-3))] border-white/[0.07] focus:border-cyan-brand/50 focus:ring-1 focus:ring-cyan-brand/20"
+                }`}
+              />
+              {isReadOnly && savedKey ? (
+                <>
                   <button
-                    onClick={() => {
-                      localStorage.removeItem("groq_api_key");
-                      setGroqKey("");
-                      setIsEditing(true);
-                      toast.success("API Key removed");
-                    }}
+                    onClick={handleEdit}
+                    className="h-10 px-3 rounded-input bg-white/[0.05] hover:bg-white/10 border border-white/[0.1] text-foreground font-semibold text-xs whitespace-nowrap transition-colors"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={handleRemoveKey}
                     className="h-10 px-3 rounded-input bg-white/[0.05] hover:bg-red-500/10 border border-white/[0.1] hover:border-red-500/30 text-red-500 font-semibold text-xs whitespace-nowrap transition-colors"
                   >
                     Revoke
                   </button>
-                )}
-              </div>
-            )}
+                </>
+              ) : (
+                <button
+                  onClick={handleSaveKey}
+                  className="h-10 px-3 rounded-input bg-cyan-brand text-black font-semibold text-xs whitespace-nowrap transition-all hover:bg-cyan-brand/90 active:scale-95"
+                >
+                  Save Key
+                </button>
+              )}
+            </div>
           </Field>
           <p className="text-xs text-[hsl(var(--text-muted))] font-mono mt-3">
             Connected to Groq · llama-3.3-70b-versatile · status: <span className="text-[hsl(var(--accent-green))]">active</span>
