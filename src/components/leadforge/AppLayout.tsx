@@ -38,7 +38,7 @@ export function AppLayout() {
       
       <BackgroundCanvas />
       <Sidebar />
-      <div className="relative md:ml-16 z-10">
+      <div className="relative md:ml-[220px] z-10">
         <ApiKeyBanner />
         <motion.div
           key={location.pathname}

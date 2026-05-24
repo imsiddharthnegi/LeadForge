@@ -12,7 +12,7 @@ export function Footer() {
       <div className="px-6 lg:px-10 max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-[hsl(var(--text-muted))] font-mono">
-            Built with React · Gemini AI · Vercel
+            Built with React · Groq AI · Vercel
           </p>
           <a
             href="https://github.com/imsiddharthnegi/LeadForge"

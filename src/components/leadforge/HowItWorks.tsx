@@ -10,7 +10,7 @@ const steps = [
   {
     icon: Zap,
     title: "AI Enriches",
-    description: "Gemini analyzes and scores leads intelligently",
+    description: "Groq AI analyzes and scores leads intelligently",
   },
   {
     icon: Download,

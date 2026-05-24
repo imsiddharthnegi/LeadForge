@@ -1,154 +1,68 @@
 import { motion } from "framer-motion";
 
-const shimmerAnimation = {
-  initial: { backgroundPosition: "0% 0%" },
-  animate: { backgroundPosition: "100% 100%" },
-};
-
 export function LeadCardSkeleton({ index }: { index: number }) {
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.08,
-        delayChildren: index * 0.05,
-      },
-    },
-  };
+  const shimmerGradient = "linear-gradient(90deg, hsl(var(--surface-2)) 0%, hsl(var(--surface-3)) 50%, hsl(var(--surface-2)) 100%)";
 
-  const item = {
-    hidden: { opacity: 0, y: 10 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-  };
-
-  const shimmerStyle = {
-    backgroundImage: "linear-gradient(90deg, transparent 0%, hsl(0 0% 100% / 0.08) 50%, transparent 100%)",
-    backgroundSize: "200% 100%",
-  };
+  const SkeletonLine = ({ width = "w-full", height = "h-4", delay = 0 }) => (
+    <motion.div
+      initial={{ opacity: 0.5 }}
+      animate={{ opacity: [0.5, 1, 0.5] }}
+      transition={{ duration: 2, repeat: Infinity, delay }}
+      className={`rounded-card ${width} ${height} bg-gradient-to-r`}
+      style={{ backgroundImage: shimmerGradient, backgroundSize: "200% 100%" }}
+    />
+  );
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.08, duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-      className="group relative glass rounded-xl p-5 lg:p-6"
+      transition={{ delay: index * 0.1, duration: 0.5 }}
+      className="bg-[hsl(var(--surface-2))] rounded-card border border-white/[0.07] p-6 space-y-5"
     >
-      {/* Left border accent */}
-      <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl bg-white/20 animate-pulse" />
-
-      <motion.div
-        variants={container}
-        initial="hidden"
-        animate="show"
-        className="space-y-4"
-      >
-        {/* Header skeleton */}
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1 space-y-2 min-w-0">
-            <motion.div
-              variants={item}
-              className="h-6 bg-white/10 rounded-md w-3/4 animate-pulse"
-              style={shimmerStyle}
-            />
-            <motion.div
-              variants={item}
-              className="h-4 bg-white/5 rounded-md w-1/2 animate-pulse"
-              style={shimmerStyle}
-            />
-          </div>
-          <motion.div
-            variants={item}
-            className="h-7 w-20 bg-white/10 rounded-full shrink-0 animate-pulse"
-            style={shimmerStyle}
-          />
+      {/* Header */}
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex-1 space-y-2">
+          <SkeletonLine width="w-2/3" height="h-5" delay={0} />
+          <SkeletonLine width="w-1/3" height="h-4" delay={0.1} />
         </div>
+        <SkeletonLine width="w-16" height="h-7" delay={0.2} />
+      </div>
 
-        {/* Links row */}
-        <div className="flex gap-2">
-          <motion.div
-            variants={item}
-            className="h-6 w-24 bg-white/5 rounded-md animate-pulse"
-            style={shimmerStyle}
-          />
-          <motion.div
-            variants={item}
-            className="h-6 w-6 bg-white/5 rounded-md animate-pulse"
-            style={shimmerStyle}
-          />
-        </div>
+      {/* Contact info row */}
+      <div className="flex gap-2 items-center">
+        <SkeletonLine width="w-32" height="h-4" delay={0.15} />
+        <span className="text-[hsl(var(--text-muted))]">·</span>
+        <SkeletonLine width="w-24" height="h-4" delay={0.2} />
+      </div>
 
-        {/* Contact info container skeleton */}
-        <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05] space-y-2">
-          <motion.div
-            variants={item}
-            className="h-9 bg-white/5 rounded-md animate-pulse"
-            style={shimmerStyle}
-          />
-          <motion.div
-            variants={item}
-            className="h-9 bg-white/5 rounded-md animate-pulse"
-            style={shimmerStyle}
-          />
-        </div>
+      {/* Divider */}
+      <div className="h-px bg-white/[0.07]" />
 
-        {/* AI content section skeleton */}
-        <div className="p-4 rounded-lg bg-gradient-to-br from-violet-brand/[0.08] to-cyan-brand/[0.08] border border-white/[0.08] space-y-3">
-          <div>
-            <motion.div
-              variants={item}
-              className="h-3 w-16 bg-white/10 rounded-md animate-pulse mb-2"
-              style={shimmerStyle}
-            />
-            <motion.div
-              variants={item}
-              className="h-4 bg-white/5 rounded-md w-full animate-pulse"
-              style={shimmerStyle}
-            />
-          </div>
-          <div>
-            <motion.div
-              variants={item}
-              className="h-3 w-20 bg-white/10 rounded-md animate-pulse mb-2"
-              style={shimmerStyle}
-            />
-            <motion.div
-              variants={item}
-              className="h-4 bg-white/5 rounded-md w-full animate-pulse"
-              style={shimmerStyle}
-            />
-            <motion.div
-              variants={item}
-              className="h-4 bg-white/5 rounded-md w-4/5 animate-pulse mt-2"
-              style={shimmerStyle}
-            />
-          </div>
-        </div>
+      {/* Contact details */}
+      <div className="space-y-3">
+        <SkeletonLine width="w-full" height="h-4" delay={0.25} />
+        <SkeletonLine width="w-full" height="h-4" delay={0.3} />
+      </div>
 
-        {/* Tech stack skeleton */}
-        <div className="flex flex-wrap gap-2">
-          {[1, 2, 3].map((i) => (
-            <motion.div
-              key={i}
-              variants={item}
-              className="h-6 w-16 bg-white/5 rounded-md animate-pulse"
-              style={shimmerStyle}
-            />
-          ))}
-        </div>
+      {/* Outreach hook */}
+      <div className="bg-[hsl(var(--surface-3))] rounded-card p-4 space-y-2">
+        <SkeletonLine width="w-3/4" height="h-4" delay={0.35} />
+        <SkeletonLine width="w-full" height="h-4" delay={0.4} />
+      </div>
 
-        {/* Bottom bar skeleton */}
-        <motion.div
-          variants={item}
-          className="flex items-center justify-between pt-3 border-t border-white/[0.05]"
-        >
-          <motion.div
-            className="h-3 w-24 bg-white/5 rounded-md animate-pulse"
-            style={shimmerStyle}
-          />
-          <motion.div className="h-8 w-8 bg-white/5 rounded-md animate-pulse" style={shimmerStyle} />
-        </motion.div>
-      </motion.div>
+      {/* Tags */}
+      <div className="flex gap-2 flex-wrap">
+        {[0, 1, 2].map((i) => (
+          <SkeletonLine key={i} width="w-20" height="h-6" delay={0.4 + i * 0.05} />
+        ))}
+      </div>
+
+      {/* Footer */}
+      <div className="flex items-center justify-between pt-3 border-t border-white/[0.07]">
+        <SkeletonLine width="w-24" height="h-3" delay={0.55} />
+        <SkeletonLine width="w-8" height="h-8" delay={0.6} />
+      </div>
     </motion.div>
   );
 }

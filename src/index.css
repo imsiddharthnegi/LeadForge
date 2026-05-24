@@ -35,6 +35,30 @@
 
     --radius: 0.875rem;
 
+    /* Design System - Sizes */
+    --radius-card: 8px;
+    --radius-input: 6px;
+    --radius-badge: 4px;
+
+    /* Design System - Shadows */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --shadow-glow: 0 0 24px rgba(0, 210, 200, 0.08);
+
+    /* Design System - Borders */
+    --border-light: 1px solid rgba(255, 255, 255, 0.07);
+
+    /* Design System - Surfaces */
+    --surface-1: #0f1117;
+    --surface-2: #161b27;
+    --surface-3: #1e2535;
+
+    /* Design System - Colors */
+    --color-accent: #00d4c8;
+    --color-text-primary: #f0f4f8;
+    --color-text-secondary: #8892a4;
+    --color-text-muted: #4a5568;
+
     /* LeadForge custom tokens */
     --bg-void: 220 80% 1.5%;
     --bg-surface: 0 0% 100%;
@@ -89,6 +113,29 @@
 }
 
 @layer utilities {
+  /* Surface utilities */
+  .surface-1 { background-color: var(--surface-1); }
+  .surface-2 { background-color: var(--surface-2); }
+  .surface-3 { background-color: var(--surface-3); }
+
+  /* Text utilities */
+  .text-primary { color: var(--color-text-primary); }
+  .text-secondary { color: var(--color-text-secondary); }
+  .text-muted-ds { color: var(--color-text-muted); }
+
+  /* Border utilities */
+  .border-system { border: var(--border-light); }
+
+  /* Shadow utilities */
+  .shadow-ds-sm { box-shadow: var(--shadow-sm); }
+  .shadow-ds-md { box-shadow: var(--shadow-md); }
+  .shadow-ds-glow { box-shadow: var(--shadow-glow); }
+
+  /* Radius utilities */
+  .rounded-card { border-radius: var(--radius-card); }
+  .rounded-input { border-radius: var(--radius-input); }
+  .rounded-badge { border-radius: var(--radius-badge); }
+
   .font-display { font-family: 'Clash Display', sans-serif; letter-spacing: -0.02em; }
   .font-mono { font-family: 'JetBrains Mono', monospace; }
 

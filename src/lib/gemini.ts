@@ -1,4 +1,4 @@
-// Lead types and Gemini API client
+// Lead types and Groq API client
 export interface Lead {
   company_name: string;
   contact_person: string;
@@ -31,7 +31,7 @@ export interface GenerateParams {
 
 export function getApiKey(): string {
   if (typeof window !== "undefined") {
-    return localStorage.getItem("gemini_api_key") || "";
+    return localStorage.getItem("groq_api_key") || "";
   }
   return "";
 }
@@ -77,43 +77,40 @@ export async function generateLeads(params: GenerateParams, apiKey: string = "")
   const finalApiKey = apiKey || getApiKey();
   
   if (!finalApiKey) {
-    throw new Error("No Gemini API key provided. Please set your API key in settings.");
+    throw new Error("No Groq API key provided. Please set your API key in settings.");
   }
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(finalApiKey)}`;
+  const url = "https://api.groq.com/openai/v1/chat/completions";
   
   const res = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "Authorization": `Bearer ${finalApiKey}`,
     },
     body: JSON.stringify({
-      contents: [
+      model: "llama-3.3-70b-versatile",
+      messages: [
         {
-          parts: [
-            {
-              text: prompt,
-            },
-          ],
+          role: "user",
+          content: prompt,
         },
       ],
-      generationConfig: {
-        maxOutputTokens: 4000,
-        temperature: 0.7,
-      },
+      temperature: 0.7,
+      max_tokens: 4000,
     }),
   });
 
   if (!res.ok) {
     const errText = await res.text().catch(() => "");
     if (res.status === 429) throw new Error("Rate limit reached. Please wait a moment and try again.");
-    if (res.status === 401 || res.status === 403) throw new Error("Invalid API key or request rejected by Gemini.");
-    if (res.status === 400) throw new Error("Request rejected by Gemini.");
-    throw new Error(`Gemini error ${res.status}: ${errText.slice(0, 140)}`);
+    if (res.status === 401 || res.status === 403) throw new Error("Invalid API key or request rejected by Groq.");
+    if (res.status === 400) throw new Error("Request rejected by Groq.");
+    throw new Error(`Groq error ${res.status}: ${errText.slice(0, 140)}`);
   }
 
   const data = await res.json();
-  const text: string | undefined = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  const text: string | undefined = data?.choices?.[0]?.message?.content;
   if (!text) throw new Error("Empty response from AI.");
   
   const cleaned = stripFences(text);
