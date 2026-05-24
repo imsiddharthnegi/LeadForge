@@ -1,7 +1,7 @@
-import { LayoutDashboard, Sparkles, Bookmark, BarChart3, Settings } from "lucide-react";
+import { LayoutDashboard, Sparkles, Bookmark, BarChart3, Settings, Pin, PinOff } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { NavLink, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Tooltip,
   TooltipContent,
@@ -18,6 +18,23 @@ const items = [
 export function Sidebar() {
   const location = useLocation();
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isPinned, setIsPinned] = useState(false);
+  
+  useEffect(() => {
+    // Load pinned state from localStorage on mount
+    const savedPinned = localStorage.getItem("sidebar_pinned") === "true";
+    setIsPinned(savedPinned);
+    if (savedPinned) {
+      setIsExpanded(true);
+    }
+  }, []);
+
+  const handlePin = () => {
+    const newPinned = !isPinned;
+    setIsPinned(newPinned);
+    localStorage.setItem("sidebar_pinned", String(newPinned));
+  };
+
   const userName = "Marcus Kim";
   const userInitials = userName
     .split(" ")
@@ -26,6 +43,14 @@ export function Sidebar() {
     .toUpperCase();
 
   const sidebarWidth = isExpanded ? 220 : 64;
+  
+  const handleMouseEnter = () => {
+    if (!isPinned) setIsExpanded(true);
+  };
+
+  const handleMouseLeave = () => {
+    if (!isPinned) setIsExpanded(false);
+  };
 
   return (
     <motion.aside
@@ -36,8 +61,8 @@ export function Sidebar() {
       }}
       animate={{ width: sidebarWidth }}
       transition={{ duration: 0.2, ease: "easeInOut" }}
-      onMouseEnter={() => setIsExpanded(true)}
-      onMouseLeave={() => setIsExpanded(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       {/* Logo Section */}
       <div className="flex items-center gap-3 px-2 mb-6">
@@ -61,6 +86,26 @@ export function Sidebar() {
                 </span>
               </div>
             </motion.div>
+          )}
+        </AnimatePresence>
+        <AnimatePresence mode="wait">
+          {isExpanded && (
+            <motion.button
+              key="pin-btn"
+              initial={{ opacity: 0, width: 0 }}
+              animate={{ opacity: 1, width: "auto" }}
+              exit={{ opacity: 0, width: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={handlePin}
+              className="p-1.5 rounded hover:bg-white/[0.08] transition-colors shrink-0"
+              title={isPinned ? "Unpin sidebar" : "Pin sidebar"}
+            >
+              {isPinned ? (
+                <PinOff size={16} className="text-cyan-brand" strokeWidth={2} />
+              ) : (
+                <Pin size={16} className="text-[hsl(var(--text-secondary))] hover:text-foreground" strokeWidth={2} />
+              )}
+            </motion.button>
           )}
         </AnimatePresence>
       </div>
