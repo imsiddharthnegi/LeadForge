@@ -57,6 +57,15 @@ function buildPrompt(p: GenerateParams) {
 - pain_point (string — specific to their business context)
 - outreach_hook (string — a highly personalized 1–2 sentence opener referencing their company specifically)
 - best_contact_time (string — e.g. 'Tuesday–Thursday, 10am–2pm EST')
+
+CRITICAL REALISM GUIDELINES:
+1. Company naming: Use real company naming conventions for the ${p.niche} industry and ${locPart || 'global'} market. Names should be plausible, memorable, and industry-appropriate.
+2. Email formats: Must follow standard corporate patterns like firstname@company.com or firstname.lastname@company.com. Avoid generic domains.
+3. Phone numbers: Must follow the correct format for ${p.location || 'the specified location'}. Include appropriate country codes and area codes.
+4. Websites: Domains must be realistic and plausible (e.g., techcorp.io, saasplatform.com). Use appropriate TLDs for the region.
+5. Quality scores: Distribute realistically across the 45–90 range — not all high scores. Vary from high (80–90) to medium (60–75) to lower (45–59) based on intent strength.
+6. Tech stacks: Must be realistic for the company size and funding stage. Bootstrapped companies use simpler, cost-effective stacks (Webflow, HubSpot, Stripe). Series B companies use enterprise tools (Salesforce, Datadog, custom infrastructure).
+
 Return only the JSON array.`;
 }
 

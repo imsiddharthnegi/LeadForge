@@ -247,6 +247,9 @@ const Index = () => {
                       </div>
                     )}
                   </div>
+                  <p className="text-[11px] text-[hsl(var(--text-muted))] mt-6 text-center px-2">
+                    AI-generated sample data for demonstration purposes. Verify details before outreach.
+                  </p>
                 </motion.div>
               )}
             </AnimatePresence>
