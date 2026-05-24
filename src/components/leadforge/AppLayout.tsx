@@ -8,6 +8,7 @@ import { ApiKeyBanner } from "./ApiKeyBanner";
 export function AppLayout() {
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
 
   useEffect(() => {
     const handleStart = () => setIsLoading(true);
@@ -25,6 +26,20 @@ export function AppLayout() {
     };
   }, [location]);
 
+  // Track sidebar hover state by listening to sidebar width changes
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      const sidebarArea = document.querySelector("[data-sidebar]");
+      if (sidebarArea) {
+        const rect = sidebarArea.getBoundingClientRect();
+        setIsSidebarExpanded(e.clientX < rect.right && e.clientX > rect.left);
+      }
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
   return (
     <div className="min-h-screen bg-[hsl(var(--bg-void))] text-foreground relative overflow-x-hidden">
       {/* Animated gradient progress line */}
@@ -37,8 +52,14 @@ export function AppLayout() {
       />
       
       <BackgroundCanvas />
-      <Sidebar />
-      <div className="relative md:ml-[220px] z-10">
+      <div data-sidebar>
+        <Sidebar />
+      </div>
+      <motion.div 
+        className="relative z-10"
+        animate={{ marginLeft: isSidebarExpanded ? 220 : 64 }}
+        transition={{ duration: 0.2, ease: "easeInOut" }}
+      >
         <ApiKeyBanner />
         <motion.div
           key={location.pathname}
@@ -48,7 +69,7 @@ export function AppLayout() {
         >
           <Outlet />
         </motion.div>
-      </div>
+      </motion.div>
     </div>
   );
 }
