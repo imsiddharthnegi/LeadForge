@@ -3,6 +3,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Sidebar } from "./Sidebar";
+import { BottomNav } from "./BottomNav";
 import { BackgroundCanvas } from "./BackgroundCanvas";
 import { ApiKeyBanner } from "./ApiKeyBanner";
 
@@ -136,10 +137,13 @@ export function AppLayout() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35, ease: [0.2, 0.8, 0.2, 1] }}
+          className="md:pb-0 pb-24"
         >
           <Outlet />
         </motion.div>
       </motion.div>
+
+      <BottomNav />
     </div>
   );
 }

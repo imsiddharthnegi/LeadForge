@@ -75,7 +75,7 @@ export default function Analytics() {
         title="Analytics"
         subtitle="Trends across sessions, niches, and industries — calibrate your next run."
       />
-      <main className="px-6 lg:px-10 pb-20 space-y-5">
+      <main className="px-4 sm:px-6 lg:px-10 pb-20 space-y-5">
         <ChartCard title="Lead Quality — Last 7 Sessions" eyebrow="Trend" delay={0}>
           <ResponsiveContainer width="100%" height={260}>
             <LineChart data={lineData} margin={{ top: 8, right: 12, bottom: 0, left: -10 }}>

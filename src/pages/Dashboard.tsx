@@ -32,7 +32,7 @@ export default function Dashboard() {
         title="Dashboard"
         subtitle="Your lead intelligence at a glance — performance, momentum, and what's coming next."
       />
-      <main className="px-6 lg:px-10 pb-20">
+      <main className="px-4 sm:px-6 lg:px-10 pb-20">
         {/* Stat grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
           {stats.map((s, i) => {

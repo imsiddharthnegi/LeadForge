@@ -38,14 +38,15 @@ export function StatsBar({ total, avg, high, hot, onExport, onCopyHooks }: Props
   ];
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      {/* Mobile: horizontal scroll, Desktop: 4-column grid */}
+      <div className="md:grid md:grid-cols-4 md:gap-3 md:mb-0 mb-6 flex gap-3 overflow-x-auto pb-2 md:pb-0">
         {stats.map((s, i) => (
           <motion.div
             key={s.label}
             initial={{ opacity: 0, y: 12, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ delay: i * 0.07, type: "spring", stiffness: 280, damping: 22 }}
-            className="glass-card rounded-xl px-4 py-3"
+            className="glass-card rounded-xl px-4 py-3 shrink-0 md:shrink min-w-max md:min-w-0"
           >
             <div className="text-[10px] uppercase tracking-wider text-[hsl(var(--text-muted))] font-mono">{s.label}</div>
             <div className="font-display text-2xl font-semibold mt-1" style={{ color: s.color }}>
@@ -55,8 +56,8 @@ export function StatsBar({ total, avg, high, hot, onExport, onCopyHooks }: Props
         ))}
       </div>
 
-      {/* Action buttons */}
-      <div className="flex gap-3 flex-wrap">
+      {/* Action buttons - stack on mobile */}
+      <div className="flex flex-col md:flex-row gap-3 md:gap-3">
         <motion.button
           initial={{ opacity: 0, y: 12, scale: 0.96 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -64,7 +65,7 @@ export function StatsBar({ total, avg, high, hot, onExport, onCopyHooks }: Props
           onClick={onExport}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.96 }}
-          className="inline-flex items-center gap-2 px-5 h-11 rounded-lg bg-gradient-to-r from-[hsl(var(--accent-cyan))] to-[hsl(var(--accent-cyan))] text-black font-semibold text-sm transition-all active:scale-95"
+          className="inline-flex items-center justify-center gap-2 px-5 h-11 rounded-lg bg-gradient-to-r from-[hsl(var(--accent-cyan))] to-[hsl(var(--accent-cyan))] text-black font-semibold text-sm transition-all active:scale-95 w-full md:w-auto"
           style={{ boxShadow: "0 10px 32px -8px hsl(var(--accent-cyan) / 0.4)" }}
         >
           <Download size={16} /> Export CSV
@@ -77,7 +78,7 @@ export function StatsBar({ total, avg, high, hot, onExport, onCopyHooks }: Props
           onClick={onCopyHooks}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.96 }}
-          className="inline-flex items-center gap-2 px-5 h-11 rounded-lg bg-white/[0.05] hover:bg-white/10 border border-white/[0.1] text-foreground font-semibold text-sm transition-all active:scale-95"
+          className="inline-flex items-center justify-center gap-2 px-5 h-11 rounded-lg bg-white/[0.05] hover:bg-white/10 border border-white/[0.1] text-foreground font-semibold text-sm transition-all active:scale-95 w-full md:w-auto"
         >
           <Copy size={16} /> Copy All Hooks
         </motion.button>

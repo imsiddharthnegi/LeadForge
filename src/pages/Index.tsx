@@ -130,7 +130,7 @@ const Index = () => {
       <HeroStrip />
       <main className="px-4 sm:px-6 lg:px-10 pb-20 pt-4">
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-6 lg:gap-7">
-          <div>
+          <div className="md:block">
             <InputPanel state={input} setState={setInput} onGenerate={handleGenerate} loading={loading} />
           </div>
           <div className="relative min-h-[480px]">

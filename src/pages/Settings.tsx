@@ -158,7 +158,7 @@ export default function SettingsPage() {
           description="Update your account information"
           delay={0.1}
         >
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-4">
             <Field label="Full Name">
               <TextInput value={name} onChange={(e) => setName(e.target.value)} />
             </Field>
@@ -168,7 +168,7 @@ export default function SettingsPage() {
           </div>
           <button
             onClick={() => toast.success("Profile updated")}
-            className="mt-2 inline-flex items-center gap-2 px-4 h-10 rounded-input bg-cyan-brand text-black font-semibold text-xs transition-all hover:bg-cyan-brand/90 active:scale-95"
+            className="mt-4 w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 h-10 rounded-input bg-cyan-brand text-black font-semibold text-xs transition-all hover:bg-cyan-brand/90 active:scale-95"
           >
             <Check size={14} /> Save Changes
           </button>
