@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Input, Zap, Download } from "lucide-react";
+import { Search, Zap, Download } from "lucide-react";
 
 const steps = [
   {
