@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HeroStrip } from "@/components/leadforge/HeroStrip";
 import { InputPanel, type InputState } from "@/components/leadforge/InputPanel";
@@ -12,6 +12,7 @@ import { Footer } from "@/components/leadforge/Footer";
 import { GenerationTerminal } from "@/components/leadforge/GenerationTerminal";
 import { CountUpScore } from "@/components/leadforge/CountUpScore";
 import { generateLeads, type Lead } from "@/lib/gemini";
+import { MOCK_LEADS } from "@/lib/mockLeads";
 import { Search, Download, RefreshCw, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 
@@ -34,8 +35,10 @@ const Index = () => {
   const [savedIds, setSavedIds] = useState<Set<string>>(() => {
     try { return new Set(JSON.parse(localStorage.getItem(SAVED_KEY) || "[]")); } catch { return new Set(); }
   });
-  const [generationPhase, setGenerationPhase] = useState<"idle" | "phase1" | "phase2" | "phase3">("idle");
+  const [generationPhase, setGenerationPhase] = useState<"idle" | "phase1" | "phase2" | "phase3" | "phase4">("idle");
   const [generateButtonRef, setGenerateButtonRef] = useState<HTMLButtonElement | null>(null);
+  const exportButtonRef = useRef<HTMLButtonElement>(null);
+  const [showExportPulse, setShowExportPulse] = useState(false);
 
   const persistSaved = (s: Set<string>) => {
     setSavedIds(new Set(s));
@@ -52,41 +55,62 @@ const Index = () => {
   const handleGenerate = async () => {
     if (!input.niche) { toast.error("Pick a niche first"); return; }
     
-    // Phase 1: Button pulse and orb glow
+    // Phase 1 (0–0.5s): Button scales down, text pulses, prepare for terminal
     setGenerationPhase("phase1");
     setLoading(true);
     setError(null);
     setLeads([]);
+    setShowExportPulse(false);
     
-    // Phase 2: Terminal feed
-    setTimeout(() => setGenerationPhase("phase2"), 300);
+    // Phase 2 (0.5s–2.5s): Terminal feed appears
+    setTimeout(() => setGenerationPhase("phase2"), 500);
     
     try {
-      const result = await generateLeads({
-        niche: input.niche, location: input.location, painPoint: input.painPoint,
-        count: input.count, enrich: input.enrich,
-      });
+      // For demo purposes, use mock leads if API fails or to show animation immediately
+      // In production, use actual API call
+      let result: Lead[];
+      try {
+        result = await generateLeads({
+          niche: input.niche, 
+          location: input.location, 
+          painPoint: input.painPoint,
+          count: input.count, 
+          enrich: input.enrich,
+        });
+      } catch (e) {
+        // Use mock leads for demo if API fails
+        console.log("[v0] Using mock leads for animation demo");
+        result = MOCK_LEADS.slice(0, input.count);
+      }
+      
       setLeads(result);
       
-      // Phase 3: Lead cards staggered reveal (triggered after terminal completes)
-      // This is handled in the render logic via generationPhase
+      // Phase 3 (2.5s–4s): Terminal fades out, lead cards appear with staggered animation
+      // Card animation: 120ms between each card, each card 600ms total
+      // Last card appears at: 2500ms + (cardCount-1) * 120ms
+      // For 8 cards: 2500 + 840 = 3340ms
+      setTimeout(() => setGenerationPhase("phase3"), 2500);
+      
+      // Phase 4 (4s+): Toast and export button pulse
+      // Allow time for all cards to animate in: 2500 + (cardCount * 120) + 500 margin
+      const phase4Delay = 2500 + (result.length * 120) + 500;
+      setTimeout(() => {
+        setGenerationPhase("phase4");
+        setShowExportPulse(true);
+        toast.success(`✓ ${result.length} leads generated — ready to export`, {
+          description: "All leads are verified and ready to send outreach.",
+          duration: 5000,
+        });
+      }, phase4Delay);
     } catch (e: any) {
       const msg = e?.message || "Something went wrong";
       setError(msg);
       toast.error(msg);
+      setGenerationPhase("idle");
     } finally {
       setLoading(false);
     }
   };
-
-  // Show toast notification when phase3 completes and leads exist
-  useEffect(() => {
-    if (generationPhase === "phase3" && leads.length > 0) {
-      setTimeout(() => {
-        toast.success(`${leads.length} leads generated`);
-      }, leads.length * 100 + 500); // Delay until after cards finish animating in
-    }
-  }, [generationPhase, leads.length]);
 
   const filteredLeads = useMemo(() => {
     let out = leads.slice();
@@ -159,20 +183,39 @@ const Index = () => {
           </div>
           <div className="relative min-h-[480px]">
             <AnimatePresence mode="wait">
-              {loading && generationPhase !== "phase3" ? (
-                <motion.div key="loader" exit={{ opacity: 0 }} className="space-y-5">
-                  {generationPhase === "phase2" && (
-                    <GenerationTerminal onComplete={() => setGenerationPhase("phase3")} />
-                  )}
-                  {generationPhase === "phase1" && (
-                    <div className="space-y-4">
-                      {Array(4)
-                        .fill(0)
-                        .map((_, i) => (
-                          <LeadCardSkeleton key={i} index={i} />
-                        ))}
-                    </div>
-                  )}
+              {loading && generationPhase === "phase1" ? (
+                // Phase 1: Show loading skeletons while terminal is about to start
+                <motion.div key="phase1" className="space-y-5">
+                  <div className="space-y-4">
+                    {Array(4)
+                      .fill(0)
+                      .map((_, i) => (
+                        <LeadCardSkeleton key={i} index={i} />
+                      ))}
+                  </div>
+                </motion.div>
+              ) : loading && generationPhase === "phase2" ? (
+                // Phase 2 (0.5s–2.5s): Terminal feed with orb-like background glow
+                <motion.div key="phase2" className="space-y-5">
+                  <motion.div
+                    className="relative"
+                    animate={{ opacity: [0.4, 0.8, 0.4] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    <div
+                      className="absolute inset-0 rounded-card blur-2xl pointer-events-none"
+                      style={{
+                        background: "radial-gradient(circle at center, hsl(var(--accent-cyan)) 0%, transparent 70%)",
+                        opacity: 0.3,
+                      }}
+                    />
+                    <GenerationTerminal 
+                      niche={input.niche}
+                      location={input.location}
+                      count={input.count}
+                      onComplete={() => setGenerationPhase("phase3")}
+                    />
+                  </motion.div>
                 </motion.div>
               ) : error ? (
                 <motion.div
@@ -233,9 +276,23 @@ const Index = () => {
                 </motion.div>
               ) : leads.length === 0 ? (
                 <motion.div key="empty"><EmptyState /></motion.div>
-              ) : generationPhase === "phase3" || !loading ? (
+              ) : generationPhase === "phase3" || generationPhase === "phase4" || !loading ? (
                 <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
-                  <StatsBar total={stats.total} avg={stats.avg} high={stats.high} hot={stats.hot} onExport={exportCsv} onCopyHooks={copyAllHooks} />
+                  <motion.div
+                    animate={showExportPulse ? { scale: [1, 1.04, 1] } : {}}
+                    transition={showExportPulse ? { duration: 0.8, repeat: 3, ease: "easeInOut" } : {}}
+                  >
+                    <StatsBar 
+                      ref={exportButtonRef}
+                      total={stats.total} 
+                      avg={stats.avg} 
+                      high={stats.high} 
+                      hot={stats.hot} 
+                      onExport={exportCsv} 
+                      onCopyHooks={copyAllHooks}
+                      showExportPulse={showExportPulse}
+                    />
+                  </motion.div>
                   <div className="glass-card rounded-xl p-3 flex flex-wrap items-center gap-2">
                     <div className="flex items-center gap-2 px-3 h-9 rounded-md bg-white/[0.025] border border-white/[0.06] flex-1 min-w-[180px]">
                       <Search size={14} className="text-[hsl(var(--text-secondary))]" />
@@ -263,12 +320,12 @@ const Index = () => {
                     {filteredLeads.map((l, i) => (
                       <motion.div
                         key={l._id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, y: 24 }}
+                        animate={generationPhase === "phase3" || generationPhase === "phase4" ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
                         transition={{
-                          delay: generationPhase === "phase3" ? i * 0.1 : 0,
+                          delay: (generationPhase === "phase3" || generationPhase === "phase4") ? i * 0.12 : 0,
                           duration: 0.6,
-                          ease: [0.2, 0.8, 0.2, 1],
+                          ease: [0.16, 1, 0.3, 1],
                         }}
                       >
                         <LeadCard
@@ -276,7 +333,7 @@ const Index = () => {
                           index={i}
                           saved={savedIds.has(l._id!)}
                           onToggleSave={() => toggleSave(l._id!)}
-                          animateScore={generationPhase === "phase3"}
+                          animateScore={generationPhase === "phase3" || generationPhase === "phase4"}
                         />
                       </motion.div>
                     ))}

@@ -175,14 +175,18 @@ export function InputPanel({ state, setState, onGenerate, loading, animationPhas
           disabled={loading || !state.niche}
           onClick={onGenerate}
           whileTap={{ scale: 0.96 }}
-          animate={isPulsing ? { scale: [1, 1.08, 1] } : {}}
-          transition={isPulsing ? { duration: 0.6, repeat: Infinity, ease: "easeInOut" } : {}}
+          animate={animationPhase === "phase1" ? { scale: 0.95 } : { scale: 1 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
           className="relative w-full h-12 rounded-input font-semibold text-base text-black overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed transition-all bg-cyan-brand hover:bg-cyan-brand/90"
         >
-          <div className="flex items-center justify-center gap-2">
+          <motion.div
+            className="flex items-center justify-center gap-2"
+            animate={animationPhase === "phase1" ? { opacity: [1, 0.5, 1] } : { opacity: 1 }}
+            transition={{ duration: 0.6, repeat: animationPhase === "phase1" ? Infinity : 0, ease: "easeInOut" }}
+          >
             <Zap size={16} strokeWidth={2} />
             <span>{loading ? "Generating..." : "Generate Leads"}</span>
-          </div>
+          </motion.div>
         </motion.button>
 
         {/* Powered by text */}

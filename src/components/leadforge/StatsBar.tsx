@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, forwardRef } from "react";
 import { motion } from "framer-motion";
 import { Download, Copy } from "lucide-react";
 import { toast } from "sonner";
@@ -27,9 +27,11 @@ interface Props {
   hot: number;
   onExport: () => void;
   onCopyHooks: () => void;
+  showExportPulse?: boolean;
 }
 
-export function StatsBar({ total, avg, high, hot, onExport, onCopyHooks }: Props) {
+export const StatsBar = forwardRef<HTMLDivElement, Props>(
+  ({ total, avg, high, hot, onExport, onCopyHooks, showExportPulse = false }, ref) => {
   const stats = [
     { label: "Total Leads", value: total, color: "hsl(var(--text-primary))" },
     { label: "Avg Quality", value: avg, decimals: 1, color: "hsl(var(--accent-cyan))" },
@@ -59,14 +61,15 @@ export function StatsBar({ total, avg, high, hot, onExport, onCopyHooks }: Props
       {/* Action buttons - stack on mobile */}
       <div className="flex flex-col md:flex-row gap-3 md:gap-3">
         <motion.button
+          ref={ref}
           initial={{ opacity: 0, y: 12, scale: 0.96 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ delay: 0.32, type: "spring", stiffness: 280, damping: 22 }}
+          animate={showExportPulse ? { scale: [1, 1.06, 1] } : { opacity: 1, y: 0, scale: 1 }}
+          transition={showExportPulse ? { duration: 0.8, repeat: 3, ease: "easeInOut" } : { delay: 0.32, type: "spring", stiffness: 280, damping: 22 }}
           onClick={onExport}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.96 }}
           className="inline-flex items-center justify-center gap-2 px-5 h-11 rounded-lg bg-gradient-to-r from-[hsl(var(--accent-cyan))] to-[hsl(var(--accent-cyan))] text-black font-semibold text-sm transition-all active:scale-95 w-full md:w-auto"
-          style={{ boxShadow: "0 10px 32px -8px hsl(var(--accent-cyan) / 0.4)" }}
+          style={{ boxShadow: showExportPulse ? "0 10px 40px -8px hsl(var(--accent-green) / 0.6)" : "0 10px 32px -8px hsl(var(--accent-cyan) / 0.4)" }}
         >
           <Download size={16} /> Export CSV
         </motion.button>
@@ -86,3 +89,4 @@ export function StatsBar({ total, avg, high, hot, onExport, onCopyHooks }: Props
     </div>
   );
 }
+);

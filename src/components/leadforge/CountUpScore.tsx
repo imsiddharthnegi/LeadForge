@@ -3,26 +3,34 @@ import { motion } from "framer-motion";
 
 interface CountUpScoreProps {
   targetScore: number;
+  duration?: number; // milliseconds, default 600ms
 }
 
-export function CountUpScore({ targetScore }: CountUpScoreProps) {
+export function CountUpScore({ targetScore, duration = 600 }: CountUpScoreProps) {
   const [displayScore, setDisplayScore] = useState(0);
 
   useEffect(() => {
-    let current = 0;
-    const increment = Math.max(1, Math.floor(targetScore / 20));
-    const interval = setInterval(() => {
-      current += increment;
-      if (current >= targetScore) {
-        setDisplayScore(targetScore);
-        clearInterval(interval);
-      } else {
-        setDisplayScore(current);
-      }
-    }, 30);
+    const startTime = Date.now();
+    const animationInterval = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Easing function for smooth animation
+      const eased = progress < 0.5 
+        ? 2 * progress * progress 
+        : -1 + (4 - 2 * progress) * progress;
+      
+      const current = Math.round(eased * targetScore);
+      setDisplayScore(current);
 
-    return () => clearInterval(interval);
-  }, [targetScore]);
+      if (progress >= 1) {
+        clearInterval(animationInterval);
+        setDisplayScore(targetScore);
+      }
+    }, 16); // ~60fps
+
+    return () => clearInterval(animationInterval);
+  }, [targetScore, duration]);
 
   return <motion.span>{displayScore}</motion.span>;
 }
