@@ -33,10 +33,11 @@ export function AppLayout() {
   // Track actual sidebar collapse state from data attribute
   useEffect(() => {
     const checkSidebarState = () => {
-      const sidebarElement = document.querySelector("[data-state]");
+      const sidebarElement = document.querySelector("[data-sidebar] [data-state]");
       if (sidebarElement) {
         const state = sidebarElement.getAttribute("data-state");
         setIsSidebarCollapsed(state === "collapsed");
+        console.log("[v0] Sidebar state changed to:", state);
       }
     };
 
@@ -45,7 +46,7 @@ export function AppLayout() {
 
     // Set up observer to watch for state changes
     const observer = new MutationObserver(checkSidebarState);
-    const sidebarElement = document.querySelector("[data-state]");
+    const sidebarElement = document.querySelector("[data-sidebar] [data-state]");
     if (sidebarElement) {
       observer.observe(sidebarElement, { attributes: true, attributeFilter: ["data-state"] });
     }
