@@ -17,7 +17,7 @@ const items = [
 
 export function Sidebar() {
   const location = useLocation();
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false); // Starts collapsed by default
   const [isPinned, setIsPinned] = useState(false);
   
   useEffect(() => {
@@ -65,7 +65,7 @@ export function Sidebar() {
       onMouseLeave={handleMouseLeave}
     >
       {/* Animated gradient line at top */}
-      <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-cyan-brand to-transparent opacity-60" />
+      <div className="fixed top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-cyan-brand to-transparent opacity-60 z-50 pointer-events-none" style={{ width: sidebarWidth }} />
       
       {/* Logo Section */}
       <div className="flex items-center gap-3 px-2 mb-6">
