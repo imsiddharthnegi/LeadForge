@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import type { Lead } from "@/lib/gemini";
 import { Mail, Phone, ExternalLink, Copy, Heart, Quote } from "lucide-react";
+import { CountUpScore } from "./CountUpScore";
 import { toast } from "sonner";
 
 function scoreColor(s: number) {
@@ -27,9 +28,10 @@ interface Props {
   index: number;
   saved: boolean;
   onToggleSave: () => void;
+  animateScore?: boolean;
 }
 
-export function LeadCard({ lead, index, saved, onToggleSave }: Props) {
+export function LeadCard({ lead, index, saved, onToggleSave, animateScore = false }: Props) {
   const [showEmailCopy, setShowEmailCopy] = useState(false);
   const [showPhoneCopy, setShowPhoneCopy] = useState(false);
 
@@ -65,7 +67,7 @@ export function LeadCard({ lead, index, saved, onToggleSave }: Props) {
 
         {/* Quality score badge */}
         <div className={`px-3 py-1 rounded-badge text-xs font-bold text-white ${scoreBg(lead.quality_score)} border ${scoreBorder(lead.quality_score)} shrink-0`}>
-          {lead.quality_score}
+          {animateScore ? <CountUpScore targetScore={lead.quality_score} /> : lead.quality_score}
         </div>
       </div>
 

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HeroStrip } from "@/components/leadforge/HeroStrip";
 import { InputPanel, type InputState } from "@/components/leadforge/InputPanel";
@@ -9,6 +9,8 @@ import { ProgressIndicator } from "@/components/leadforge/ProgressIndicator";
 import { StatsBar } from "@/components/leadforge/StatsBar";
 import { HowItWorks } from "@/components/leadforge/HowItWorks";
 import { Footer } from "@/components/leadforge/Footer";
+import { GenerationTerminal } from "@/components/leadforge/GenerationTerminal";
+import { CountUpScore } from "@/components/leadforge/CountUpScore";
 import { generateLeads, type Lead } from "@/lib/gemini";
 import { Search, Download, RefreshCw, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
@@ -32,6 +34,8 @@ const Index = () => {
   const [savedIds, setSavedIds] = useState<Set<string>>(() => {
     try { return new Set(JSON.parse(localStorage.getItem(SAVED_KEY) || "[]")); } catch { return new Set(); }
   });
+  const [generationPhase, setGenerationPhase] = useState<"idle" | "phase1" | "phase2" | "phase3">("idle");
+  const [generateButtonRef, setGenerateButtonRef] = useState<HTMLButtonElement | null>(null);
 
   const persistSaved = (s: Set<string>) => {
     setSavedIds(new Set(s));
@@ -47,14 +51,25 @@ const Index = () => {
 
   const handleGenerate = async () => {
     if (!input.niche) { toast.error("Pick a niche first"); return; }
-    setLoading(true); setError(null); setLeads([]);
+    
+    // Phase 1: Button pulse and orb glow
+    setGenerationPhase("phase1");
+    setLoading(true);
+    setError(null);
+    setLeads([]);
+    
+    // Phase 2: Terminal feed
+    setTimeout(() => setGenerationPhase("phase2"), 300);
+    
     try {
       const result = await generateLeads({
         niche: input.niche, location: input.location, painPoint: input.painPoint,
         count: input.count, enrich: input.enrich,
       });
       setLeads(result);
-      toast.success(`Generated ${result.length} leads`);
+      
+      // Phase 3: Lead cards staggered reveal (triggered after terminal completes)
+      // This is handled in the render logic via generationPhase
     } catch (e: any) {
       const msg = e?.message || "Something went wrong";
       setError(msg);
@@ -63,6 +78,15 @@ const Index = () => {
       setLoading(false);
     }
   };
+
+  // Show toast notification when phase3 completes and leads exist
+  useEffect(() => {
+    if (generationPhase === "phase3" && leads.length > 0) {
+      setTimeout(() => {
+        toast.success(`${leads.length} leads generated`);
+      }, leads.length * 100 + 500); // Delay until after cards finish animating in
+    }
+  }, [generationPhase, leads.length]);
 
   const filteredLeads = useMemo(() => {
     let out = leads.slice();
@@ -131,20 +155,24 @@ const Index = () => {
       <main className="px-4 sm:px-6 lg:px-10 pb-20 pt-4">
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-6 lg:gap-7">
           <div className="md:block">
-            <InputPanel state={input} setState={setInput} onGenerate={handleGenerate} loading={loading} />
+            <InputPanel state={input} setState={setInput} onGenerate={handleGenerate} loading={loading} animationPhase={generationPhase} />
           </div>
           <div className="relative min-h-[480px]">
             <AnimatePresence mode="wait">
-              {loading ? (
+              {loading && generationPhase !== "phase3" ? (
                 <motion.div key="loader" exit={{ opacity: 0 }} className="space-y-5">
-                  <ProgressIndicator />
-                  <div className="space-y-4">
-                    {Array(4)
-                      .fill(0)
-                      .map((_, i) => (
-                        <LeadCardSkeleton key={i} index={i} />
-                      ))}
-                  </div>
+                  {generationPhase === "phase2" && (
+                    <GenerationTerminal onComplete={() => setGenerationPhase("phase3")} />
+                  )}
+                  {generationPhase === "phase1" && (
+                    <div className="space-y-4">
+                      {Array(4)
+                        .fill(0)
+                        .map((_, i) => (
+                          <LeadCardSkeleton key={i} index={i} />
+                        ))}
+                    </div>
+                  )}
                 </motion.div>
               ) : error ? (
                 <motion.div
@@ -205,7 +233,7 @@ const Index = () => {
                 </motion.div>
               ) : leads.length === 0 ? (
                 <motion.div key="empty"><EmptyState /></motion.div>
-              ) : (
+              ) : generationPhase === "phase3" || !loading ? (
                 <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
                   <StatsBar total={stats.total} avg={stats.avg} high={stats.high} hot={stats.hot} onExport={exportCsv} onCopyHooks={copyAllHooks} />
                   <div className="glass-card rounded-xl p-3 flex flex-wrap items-center gap-2">
@@ -233,13 +261,24 @@ const Index = () => {
                   </div>
                   <div className="space-y-4">
                     {filteredLeads.map((l, i) => (
-                      <LeadCard
+                      <motion.div
                         key={l._id}
-                        lead={l}
-                        index={i}
-                        saved={savedIds.has(l._id!)}
-                        onToggleSave={() => toggleSave(l._id!)}
-                      />
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{
+                          delay: generationPhase === "phase3" ? i * 0.1 : 0,
+                          duration: 0.6,
+                          ease: [0.2, 0.8, 0.2, 1],
+                        }}
+                      >
+                        <LeadCard
+                          lead={l}
+                          index={i}
+                          saved={savedIds.has(l._id!)}
+                          onToggleSave={() => toggleSave(l._id!)}
+                          animateScore={generationPhase === "phase3"}
+                        />
+                      </motion.div>
                     ))}
                     {filteredLeads.length === 0 && (
                       <div className="glass-card rounded-xl p-8 text-center text-sm text-[hsl(var(--text-secondary))]">
@@ -251,7 +290,7 @@ const Index = () => {
                     AI-generated sample data for demonstration purposes. Verify details before outreach.
                   </p>
                 </motion.div>
-              )}
+              ) : null}
             </AnimatePresence>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Zap } from "lucide-react";
 import { NicheSelector } from "./NicheSelector";
@@ -31,11 +31,22 @@ interface Props {
   setState: (s: InputState) => void;
   onGenerate: () => void;
   loading: boolean;
+  animationPhase?: "idle" | "phase1" | "phase2" | "phase3";
 }
 
 const PAIN_MAX = 280;
 
-export function InputPanel({ state, setState, onGenerate, loading }: Props) {
+export function InputPanel({ state, setState, onGenerate, loading, animationPhase = "idle" }: Props) {
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [isPulsing, setIsPulsing] = useState(false);
+
+  useEffect(() => {
+    if (animationPhase === "phase1") {
+      setIsPulsing(true);
+    } else {
+      setIsPulsing(false);
+    }
+  }, [animationPhase]);
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && state.niche && !loading) {
@@ -159,10 +170,13 @@ export function InputPanel({ state, setState, onGenerate, loading }: Props) {
 
         {/* Generate Button */}
         <motion.button
+          ref={buttonRef}
           type="button"
           disabled={loading || !state.niche}
           onClick={onGenerate}
           whileTap={{ scale: 0.96 }}
+          animate={isPulsing ? { scale: [1, 1.08, 1] } : {}}
+          transition={isPulsing ? { duration: 0.6, repeat: Infinity, ease: "easeInOut" } : {}}
           className="relative w-full h-12 rounded-input font-semibold text-base text-black overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed transition-all bg-cyan-brand hover:bg-cyan-brand/90"
         >
           <div className="flex items-center justify-center gap-2">
