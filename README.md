@@ -42,10 +42,8 @@ Google Sheets, Airtable, or any CRM.
 
 - React.js
 - Tailwind CSS
-- Google Gemini API (gemini-1.5-flash)
+- Google Gemini API
 - Vercel (deployment)
-- Lovable (AI-assisted development)
-
 ---
 
 ### Installation
