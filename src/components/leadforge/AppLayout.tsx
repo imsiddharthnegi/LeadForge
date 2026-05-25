@@ -136,10 +136,9 @@ export function AppLayout() {
       </AnimatePresence>
 
       <motion.div 
-        className="relative z-10 transition-[margin-left] duration-200 ease-linear"
-        style={{
-          marginLeft: isSidebarCollapsed ? 64 : 220,
-        }}
+        className="relative z-10"
+        animate={{ marginLeft: isSidebarCollapsed ? 64 : 220 }}
+        transition={{ duration: 0.2, ease: "easeInOut" }}
       >
         <ApiKeyBanner />
         <motion.div
