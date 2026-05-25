@@ -15,9 +15,8 @@ const items = [
   { id: "analytics", label: "Analytics", icon: BarChart3, to: "/analytics" },
 ];
 
-export function Sidebar() {
+export function Sidebar({ isExpanded = false, onToggle }: { isExpanded?: boolean; onToggle?: (expanded: boolean) => void }) {
   const location = useLocation();
-  const [isExpanded, setIsExpanded] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
   
   useEffect(() => {
@@ -25,9 +24,9 @@ export function Sidebar() {
     const savedPinned = localStorage.getItem("sidebar_pinned") === "true";
     setIsPinned(savedPinned);
     if (savedPinned) {
-      setIsExpanded(true);
+      onToggle?.(true);
     }
-  }, []);
+  }, [onToggle]);
 
   const handlePin = () => {
     const newPinned = !isPinned;
@@ -45,11 +44,11 @@ export function Sidebar() {
   const sidebarWidth = isExpanded ? 220 : 64;
   
   const handleMouseEnter = () => {
-    if (!isPinned) setIsExpanded(true);
+    if (!isPinned) onToggle?.(true);
   };
 
   const handleMouseLeave = () => {
-    if (!isPinned) setIsExpanded(false);
+    if (!isPinned) onToggle?.(false);
   };
 
   return (

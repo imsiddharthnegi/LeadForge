@@ -10,7 +10,7 @@ import { ApiKeyBanner } from "./ApiKeyBanner";
 export function AppLayout() {
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
 
@@ -29,30 +29,6 @@ export function AppLayout() {
       clearTimeout(timer);
     };
   }, [location]);
-
-  // Track actual sidebar collapse state from data attribute
-  useEffect(() => {
-    const checkSidebarState = () => {
-      const sidebarElement = document.querySelector("[data-sidebar] [data-state]");
-      if (sidebarElement) {
-        const state = sidebarElement.getAttribute("data-state");
-        setIsSidebarCollapsed(state === "collapsed");
-        console.log("[v0] Sidebar state changed to:", state);
-      }
-    };
-
-    // Check initial state
-    checkSidebarState();
-
-    // Set up observer to watch for state changes
-    const observer = new MutationObserver(checkSidebarState);
-    const sidebarElement = document.querySelector("[data-sidebar] [data-state]");
-    if (sidebarElement) {
-      observer.observe(sidebarElement, { attributes: true, attributeFilter: ["data-state"] });
-    }
-
-    return () => observer.disconnect();
-  }, []);
 
   // Close mobile drawer on outside click
   useEffect(() => {
@@ -89,7 +65,7 @@ export function AppLayout() {
       
       <BackgroundCanvas />
       <div data-sidebar>
-        <Sidebar />
+        <Sidebar isExpanded={isSidebarExpanded} onToggle={setIsSidebarExpanded} />
       </div>
 
       {/* Mobile hamburger menu */}
@@ -138,7 +114,7 @@ export function AppLayout() {
 
       <motion.div 
         className="relative z-10"
-        animate={{ marginLeft: isSidebarCollapsed ? 64 : 220 }}
+        animate={{ marginLeft: isSidebarExpanded ? 220 : 64 }}
         transition={{ duration: 0.2, ease: "easeInOut" }}
       >
         <ApiKeyBanner />
