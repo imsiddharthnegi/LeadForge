@@ -127,10 +127,11 @@ export function AppLayout() {
       </AnimatePresence>
 
       <motion.div 
-        className="relative z-10 md:ml-0"
-        style={{ marginLeft: isSidebarExpanded ? 220 : 64 }}
-        transition={{ duration: 0.2, ease: "easeInOut" }}
-      >
+  className="relative z-10"
+  animate={{ marginLeft: isSidebarExpanded ? 220 : 64 }}
+  initial={{ marginLeft: 64 }}
+  transition={{ duration: 0.2, ease: "easeInOut" }}
+>
         <ApiKeyBanner />
         <motion.div
           key={location.pathname}
