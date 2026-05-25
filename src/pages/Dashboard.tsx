@@ -32,7 +32,7 @@ export default function Dashboard() {
         title="Dashboard"
         subtitle="Your lead intelligence at a glance — performance, momentum, and what's coming next."
       />
-      <main className="px-6 lg:px-10 pb-20">
+      <main className="px-4 sm:px-6 lg:px-10 pb-20">
         {/* Stat grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
           {stats.map((s, i) => {
@@ -44,7 +44,7 @@ export default function Dashboard() {
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.07, duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
-                className="glass rounded-2xl p-5 relative overflow-hidden group"
+                className="glass-card rounded-2xl p-5 relative overflow-hidden group"
               >
                 <div
                   aria-hidden
@@ -74,7 +74,7 @@ export default function Dashboard() {
         {/* Activity feed */}
         <motion.div
           initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-          className="glass rounded-2xl p-6 lg:p-7"
+          className="glass-card rounded-2xl p-6 lg:p-7"
         >
           <div className="flex items-center justify-between mb-5">
             <div>

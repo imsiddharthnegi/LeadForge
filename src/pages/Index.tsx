@@ -130,7 +130,7 @@ const Index = () => {
       <HeroStrip />
       <main className="px-4 sm:px-6 lg:px-10 pb-20 pt-4">
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-6 lg:gap-7">
-          <div>
+          <div className="md:block">
             <InputPanel state={input} setState={setInput} onGenerate={handleGenerate} loading={loading} />
           </div>
           <div className="relative min-h-[480px]">
@@ -152,7 +152,7 @@ const Index = () => {
                   initial={{ opacity: 0, y: 10, scale: 0.98 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ type: "spring", stiffness: 220, damping: 22 }}
-                  className="relative rounded-2xl p-10 min-h-[400px] flex flex-col items-center justify-center text-center overflow-hidden glass"
+                  className="relative rounded-2xl p-10 min-h-[400px] flex flex-col items-center justify-center text-center overflow-hidden glass-card"
                   style={{
                     border: "1px solid hsl(var(--accent-red) / 0.35)",
                     boxShadow: "0 0 0 1px hsl(var(--accent-red) / 0.15), 0 20px 60px -20px hsl(var(--accent-red) / 0.45), inset 0 1px 0 0 hsl(0 0% 100% / 0.05)",
@@ -208,7 +208,7 @@ const Index = () => {
               ) : (
                 <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
                   <StatsBar total={stats.total} avg={stats.avg} high={stats.high} hot={stats.hot} onExport={exportCsv} onCopyHooks={copyAllHooks} />
-                  <div className="glass rounded-xl p-3 flex flex-wrap items-center gap-2">
+                  <div className="glass-card rounded-xl p-3 flex flex-wrap items-center gap-2">
                     <div className="flex items-center gap-2 px-3 h-9 rounded-md bg-white/[0.025] border border-white/[0.06] flex-1 min-w-[180px]">
                       <Search size={14} className="text-[hsl(var(--text-secondary))]" />
                       <input
@@ -242,11 +242,14 @@ const Index = () => {
                       />
                     ))}
                     {filteredLeads.length === 0 && (
-                      <div className="glass rounded-xl p-8 text-center text-sm text-[hsl(var(--text-secondary))]">
+                      <div className="glass-card rounded-xl p-8 text-center text-sm text-[hsl(var(--text-secondary))]">
                         No leads match your filters.
                       </div>
                     )}
                   </div>
+                  <p className="text-[11px] text-[hsl(var(--text-muted))] mt-6 text-center px-2">
+                    AI-generated sample data for demonstration purposes. Verify details before outreach.
+                  </p>
                 </motion.div>
               )}
             </AnimatePresence>

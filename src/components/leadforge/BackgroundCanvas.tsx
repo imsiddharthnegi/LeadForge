@@ -45,17 +45,17 @@ export function BackgroundCanvas() {
       const R = Math.min(w, h) * 0.3;
       angle += 0.0015;
 
-      // Cyan radial glow behind globe — slightly dimmer
+      // Cyan radial glow behind globe — subtle maximum opacity 0.15
       const glow = ctx.createRadialGradient(cx, cy, R * 0.1, cx, cy, R * 1.6);
-      glow.addColorStop(0, "rgba(0,212,255,0.12)");
-      glow.addColorStop(0.5, "rgba(0,212,255,0.04)");
+      glow.addColorStop(0, "rgba(0,212,255,0.08)");
+      glow.addColorStop(0.5, "rgba(0,212,255,0.02)");
       glow.addColorStop(1, "rgba(0,212,255,0)");
       ctx.fillStyle = glow;
       ctx.beginPath();
       ctx.arc(cx, cy, R * 1.6, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.strokeStyle = "rgba(0,212,255,0.09)";
+      ctx.strokeStyle = "rgba(0,212,255,0.06)";
       ctx.lineWidth = 0.8;
       const steps = 14;
       // latitude rings — tilt slightly with rotation for depth
@@ -77,7 +77,7 @@ export function BackgroundCanvas() {
         ctx.stroke();
       }
 
-      // particles
+      // particles — reduced opacity to max 0.15
       for (const p of particles) {
         // mouse repel
         if (mouse.current.active) {
@@ -95,12 +95,12 @@ export function BackgroundCanvas() {
         if (p.x < 0) p.x = w; if (p.x > w) p.x = 0;
         if (p.y < 0) p.y = h; if (p.y > h) p.y = 0;
 
-        ctx.fillStyle = `rgba(${p.c}, 0.45)`;
+        ctx.fillStyle = `rgba(${p.c}, 0.15)`;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fill();
-        // glow
-        ctx.fillStyle = `rgba(${p.c}, 0.05)`;
+        // glow — reduced opacity
+        ctx.fillStyle = `rgba(${p.c}, 0.03)`;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r * 4, 0, Math.PI * 2);
         ctx.fill();

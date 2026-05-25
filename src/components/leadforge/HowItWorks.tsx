@@ -59,7 +59,7 @@ export function HowItWorks() {
           const Icon = step.icon;
           return (
             <motion.div key={i} variants={item}>
-              <div className="group relative glass rounded-xl p-6 h-full text-center hover:border-cyan-brand/50 transition-all duration-300">
+              <div className="group relative glass-card rounded-xl p-6 h-full text-center hover:border-cyan-brand/50 transition-all duration-300">
                 {/* Number indicator */}
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-gradient-to-r from-cyan-brand to-violet-brand flex items-center justify-center font-bold text-black text-sm">
                   {i + 1}

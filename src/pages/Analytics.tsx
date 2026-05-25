@@ -54,7 +54,7 @@ function ChartCard({ title, eyebrow, children, delay = 0, className = "" }: {
     <motion.div
       initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
-      className={`glass rounded-2xl p-6 relative overflow-hidden ${className}`}
+      className={`glass-card rounded-2xl p-6 relative overflow-hidden ${className}`}
     >
       <div className="flex items-center justify-between mb-5">
         <div>
@@ -75,7 +75,7 @@ export default function Analytics() {
         title="Analytics"
         subtitle="Trends across sessions, niches, and industries — calibrate your next run."
       />
-      <main className="px-6 lg:px-10 pb-20 space-y-5">
+      <main className="px-4 sm:px-6 lg:px-10 pb-20 space-y-5">
         <ChartCard title="Lead Quality — Last 7 Sessions" eyebrow="Trend" delay={0}>
           <ResponsiveContainer width="100%" height={260}>
             <LineChart data={lineData} margin={{ top: 8, right: 12, bottom: 0, left: -10 }}>

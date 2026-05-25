@@ -121,13 +121,13 @@ export default function SavedLeads() {
         title="Saved Leads"
         subtitle="Hand-picked prospects you want to come back to. Search, filter, and pick up the conversation."
       />
-      <main className="px-6 lg:px-10 pb-20">
+      <main className="px-4 sm:px-6 lg:px-10 pb-20">
         <motion.div
           initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-          className="glass rounded-2xl p-3 mb-6 flex flex-wrap items-center gap-2"
+          className="glass-card rounded-2xl p-3 mb-6 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3"
         >
-          <div className="flex items-center gap-2 px-3 h-9 rounded-md bg-white/[0.025] border border-white/[0.06] flex-1 min-w-[220px]">
-            <Search size={14} className="text-[hsl(var(--text-secondary))]" />
+          <div className="flex items-center gap-2 px-3 h-9 rounded-md bg-white/[0.025] border border-white/[0.06] flex-1 min-w-0">
+            <Search size={14} className="text-[hsl(var(--text-secondary))] shrink-0" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -135,15 +135,15 @@ export default function SavedLeads() {
               className="flex-1 bg-transparent text-sm focus:outline-none"
             />
           </div>
-          <div className="flex items-center gap-1 p-1 rounded-lg bg-white/[0.02] border border-white/[0.06]">
-            <span className="grid place-items-center w-8 h-9">
+          <div className="flex items-center gap-1 p-1 rounded-lg bg-white/[0.02] border border-white/[0.06] overflow-x-auto">
+            <span className="grid place-items-center w-8 h-9 shrink-0">
               <Filter size={13} className="text-[hsl(var(--text-secondary))]" />
             </span>
             <FilterChip id="all" label="All" />
             <FilterChip id="high" label="High (75+)" />
             <FilterChip id="hot" label="Hot (90+)" />
           </div>
-          <span className="text-[10px] font-mono text-[hsl(var(--text-muted))] ml-auto px-2">
+          <span className="text-[10px] font-mono text-[hsl(var(--text-muted))] px-2 shrink-0">
             {filtered.length} of {dummy.length}
           </span>
         </motion.div>
@@ -159,7 +159,7 @@ export default function SavedLeads() {
             />
           ))}
           {filtered.length === 0 && (
-            <div className="glass rounded-xl p-10 text-center text-sm text-[hsl(var(--text-secondary))]">
+            <div className="glass-card rounded-xl p-10 text-center text-sm text-[hsl(var(--text-secondary))]">
               No saved leads match your filters.
             </div>
           )}
