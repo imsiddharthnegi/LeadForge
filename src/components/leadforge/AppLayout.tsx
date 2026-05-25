@@ -10,7 +10,7 @@ import { ApiKeyBanner } from "./ApiKeyBanner";
 export function AppLayout() {
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
-  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
 
@@ -30,18 +30,27 @@ export function AppLayout() {
     };
   }, [location]);
 
-  // Track sidebar hover state by listening to sidebar width changes
+  // Track actual sidebar collapse state from data attribute
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const sidebarArea = document.querySelector("[data-sidebar]");
-      if (sidebarArea) {
-        const rect = sidebarArea.getBoundingClientRect();
-        setIsSidebarExpanded(e.clientX < rect.right && e.clientX > rect.left);
+    const checkSidebarState = () => {
+      const sidebarElement = document.querySelector("[data-state]");
+      if (sidebarElement) {
+        const state = sidebarElement.getAttribute("data-state");
+        setIsSidebarCollapsed(state === "collapsed");
       }
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
+    // Check initial state
+    checkSidebarState();
+
+    // Set up observer to watch for state changes
+    const observer = new MutationObserver(checkSidebarState);
+    const sidebarElement = document.querySelector("[data-state]");
+    if (sidebarElement) {
+      observer.observe(sidebarElement, { attributes: true, attributeFilter: ["data-state"] });
+    }
+
+    return () => observer.disconnect();
   }, []);
 
   // Close mobile drawer on outside click
@@ -127,9 +136,10 @@ export function AppLayout() {
       </AnimatePresence>
 
       <motion.div 
-        className="relative z-10 md:ml-0"
-        animate={{ marginLeft: isSidebarExpanded ? 220 : 64 }}
-        transition={{ duration: 0.2, ease: "easeInOut" }}
+        className="relative z-10 transition-[margin-left] duration-200 ease-linear"
+        style={{
+          marginLeft: isSidebarCollapsed ? 64 : 220,
+        }}
       >
         <ApiKeyBanner />
         <motion.div
