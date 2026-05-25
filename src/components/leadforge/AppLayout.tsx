@@ -30,20 +30,6 @@ export function AppLayout() {
     };
   }, [location]);
 
-  // Track sidebar hover state by listening to sidebar width changes
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const sidebarArea = document.querySelector("[data-sidebar]");
-      if (sidebarArea) {
-        const rect = sidebarArea.getBoundingClientRect();
-        setIsSidebarExpanded(e.clientX < rect.right && e.clientX > rect.left);
-      }
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
-
   // Close mobile drawer on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -79,7 +65,7 @@ export function AppLayout() {
       
       <BackgroundCanvas />
       <div data-sidebar>
-        <Sidebar />
+        <Sidebar isExpanded={isSidebarExpanded} onToggle={setIsSidebarExpanded} />
       </div>
 
       {/* Mobile hamburger menu */}
@@ -127,7 +113,7 @@ export function AppLayout() {
       </AnimatePresence>
 
       <motion.div 
-        className="relative z-10 md:ml-0"
+        className="relative z-10"
         animate={{ marginLeft: isSidebarExpanded ? 220 : 64 }}
         transition={{ duration: 0.2, ease: "easeInOut" }}
       >
