@@ -132,7 +132,7 @@ export function BackgroundCanvas() {
     <canvas
       ref={ref}
       className="fixed inset-0 w-full h-full pointer-events-none"
-      style={{ zIndex: 0 }}
+      style={{ zIndex: 0, opacity: 0.08 }}
     />
   );
 }

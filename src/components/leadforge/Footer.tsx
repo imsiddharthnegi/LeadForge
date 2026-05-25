@@ -10,20 +10,19 @@ export function Footer() {
       className="border-t border-white/[0.05] mt-16 py-8"
     >
       <div className="px-6 lg:px-10 max-w-7xl mx-auto">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-[hsl(var(--text-muted))] font-mono">
-            Built with React · Groq AI · Vercel
+        <div className="flex flex-col items-center justify-center gap-3 text-center">
+          <p className="text-xs text-[hsl(var(--text-muted))] font-mono tracking-wide">
+            LeadForge · Powered by Groq AI ·{" "}
+            <a
+              href="https://github.com/imsiddharthnegi/LeadForge"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1 text-cyan-brand/70 hover:text-cyan-brand transition-colors"
+            >
+              <Github size={12} />
+              GitHub
+            </a>
           </p>
-          <a
-            href="https://github.com/imsiddharthnegi/LeadForge"
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-md text-xs font-medium text-[hsl(var(--text-secondary))] hover:text-foreground hover:bg-white/[0.05] transition-all duration-200"
-          >
-            <Github size={14} />
-            View on GitHub
-            <ExternalLink size={12} />
-          </a>
         </div>
       </div>
     </motion.footer>

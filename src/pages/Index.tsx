@@ -128,11 +128,11 @@ const Index = () => {
   return (
     <>
       <HeroStrip />
-      <main className="px-4 sm:px-6 lg:px-10 pb-20 pt-4">
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-6 lg:gap-7">
-          <div className="md:block">
-            <InputPanel state={input} setState={setInput} onGenerate={handleGenerate} loading={loading} />
-          </div>
+      <main className="pb-20 pt-4 flex gap-6 lg:gap-7">
+        <div className="hidden lg:block w-[360px] flex-shrink-0 px-4 sm:px-6 lg:px-10">
+          <InputPanel state={input} setState={setInput} onGenerate={handleGenerate} loading={loading} />
+        </div>
+        <div className="flex-1 px-4 sm:px-6 lg:px-10">
           <div className="relative min-h-[480px]">
             <AnimatePresence mode="wait">
               {loading ? (
@@ -256,6 +256,9 @@ const Index = () => {
           </div>
         </div>
       </main>
+      <div className="lg:hidden px-4 sm:px-6 pb-4 pt-4">
+          <InputPanel state={input} setState={setInput} onGenerate={handleGenerate} loading={loading} />
+      </div>
       {leads.length === 0 && <HowItWorks />}
       <Footer />
     </>

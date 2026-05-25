@@ -18,7 +18,7 @@ export function BottomNav() {
   const location = useLocation();
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-white/[0.07] bg-[hsl(var(--bg-void))]">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-white/[0.07] bg-[hsl(var(--bg-void))]" style={{ paddingBottom: "max(0px, env(safe-area-inset-bottom))" }}>
       <div className="flex items-center justify-around h-16">
         {items.map((item) => {
           const Icon = item.icon;

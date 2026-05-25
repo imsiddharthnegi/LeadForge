@@ -73,16 +73,21 @@ function Toggle({ value, onChange, label, hint }: {
 }
 
 export default function SettingsPage() {
-  const [name, setName] = useState("Marcus Kim");
-  const [email, setEmail] = useState("marcus@leadforge.app");
+  const [name, setName] = useState(() => localStorage.getItem("user_name") || "Marcus Kim");
+  const [email, setEmail] = useState(() => localStorage.getItem("user_email") || "marcus@leadforge.app");
   const [savedKey, setSavedKey] = useState("");
   const [inputValue, setInputValue] = useState("");
   const [isReadOnly, setIsReadOnly] = useState(false);
   const [prefs, setPrefs] = useState({ emailNotifications: true, autoSave: false, darkMode: true });
   const inputRef = React.useRef<HTMLInputElement>(null);
 
-  // Load API key from localStorage on mount
+  // Load profile data and API key from localStorage on mount
   React.useEffect(() => {
+    const storedName = localStorage.getItem("user_name");
+    const storedEmail = localStorage.getItem("user_email");
+    if (storedName) setName(storedName);
+    if (storedEmail) setEmail(storedEmail);
+
     const storedKey = localStorage.getItem("groq_api_key") || "";
     setSavedKey(storedKey);
     if (storedKey) {
@@ -132,6 +137,16 @@ export default function SettingsPage() {
     toast.success("API Key removed");
   };
 
+  const handleSaveProfile = () => {
+    if (name.trim() && email.trim()) {
+      localStorage.setItem("user_name", name.trim());
+      localStorage.setItem("user_email", email.trim());
+      toast.success("Profile updated");
+    } else {
+      toast.error("Name and email are required");
+    }
+  };
+
   return (
     <>
       {/* Page Header */}
@@ -167,7 +182,7 @@ export default function SettingsPage() {
             </Field>
           </div>
           <button
-            onClick={() => toast.success("Profile updated")}
+            onClick={handleSaveProfile}
             className="mt-4 w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 h-10 rounded-input bg-cyan-brand text-black font-semibold text-xs transition-all hover:bg-cyan-brand/90 active:scale-95"
           >
             <Check size={14} /> Save Changes

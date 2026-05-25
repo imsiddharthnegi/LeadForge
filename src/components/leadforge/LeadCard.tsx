@@ -4,22 +4,35 @@ import type { Lead } from "@/lib/gemini";
 import { Mail, Phone, ExternalLink, Copy, Heart, Quote } from "lucide-react";
 import { toast } from "sonner";
 
-function scoreColor(s: number) {
-  if (s >= 70) return "hsl(var(--accent-green))";
-  if (s >= 40) return "hsl(var(--accent-amber))";
-  return "hsl(var(--accent-red))";
-}
-
-function scoreBg(s: number) {
-  if (s >= 70) return "bg-green-500/10";
-  if (s >= 40) return "bg-amber-500/10";
-  return "bg-red-500/10";
-}
-
-function scoreBorder(s: number) {
-  if (s >= 70) return "border-green-500/30";
-  if (s >= 40) return "border-amber-500/30";
-  return "border-red-500/30";
+function getScoreTheme(s: number) {
+  if (s >= 90) return { 
+    color: "hsl(var(--accent-green))", 
+    bg: "bg-green-400/10", 
+    border: "border-l-green-400", 
+    badgeBg: "bg-green-400/20",
+    badgeBorder: "border-green-400/50"
+  };
+  if (s >= 75) return { 
+    color: "hsl(var(--accent-cyan))", 
+    bg: "bg-cyan-400/10", 
+    border: "border-l-cyan-400", 
+    badgeBg: "bg-cyan-400/20",
+    badgeBorder: "border-cyan-400/50"
+  };
+  if (s >= 50) return { 
+    color: "hsl(var(--accent-amber))", 
+    bg: "bg-yellow-400/10", 
+    border: "border-l-yellow-400", 
+    badgeBg: "bg-yellow-400/20",
+    badgeBorder: "border-yellow-400/50"
+  };
+  return { 
+    color: "hsl(var(--accent-red))", 
+    bg: "bg-red-400/10", 
+    border: "border-l-red-400", 
+    badgeBg: "bg-red-400/20",
+    badgeBorder: "border-red-400/50"
+  };
 }
 
 interface Props {
@@ -32,6 +45,7 @@ interface Props {
 export function LeadCard({ lead, index, saved, onToggleSave }: Props) {
   const [showEmailCopy, setShowEmailCopy] = useState(false);
   const [showPhoneCopy, setShowPhoneCopy] = useState(false);
+  const theme = getScoreTheme(lead.quality_score);
 
   const copy = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
@@ -43,7 +57,7 @@ export function LeadCard({ lead, index, saved, onToggleSave }: Props) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.08, duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-      className="group relative bg-[hsl(var(--surface-2))] rounded-card border border-white/[0.07] hover:border-cyan-brand/30 transition-all duration-200 p-6"
+      className={`group relative bg-[hsl(var(--surface-2))] rounded-card border border-white/[0.07] hover:border-cyan-brand/30 transition-all duration-200 p-6 border-l-4 ${theme.border}`}
     >
       {/* Header: Company name + Quality score pill */}
       <div className="flex items-start justify-between gap-4 mb-5">
@@ -64,7 +78,7 @@ export function LeadCard({ lead, index, saved, onToggleSave }: Props) {
         </div>
 
         {/* Quality score badge */}
-        <div className={`px-3 py-1 rounded-badge text-xs font-bold text-white ${scoreBg(lead.quality_score)} border ${scoreBorder(lead.quality_score)} shrink-0`}>
+        <div className={`px-3 py-1.5 rounded-badge text-xs font-bold text-white ${theme.badgeBg} border ${theme.badgeBorder} shrink-0`} style={{ color: theme.color }}>
           {lead.quality_score}
         </div>
       </div>

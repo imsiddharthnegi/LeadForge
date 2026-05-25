@@ -54,7 +54,7 @@ export function Sidebar() {
 
   return (
     <motion.aside
-      className="hidden md:flex fixed left-0 top-0 bottom-0 z-40 flex-col py-5 px-3 bg-[hsl(var(--bg-void))]"
+      className="hidden md:flex fixed left-0 top-0 bottom-0 z-40 flex-col py-5 px-3 bg-[hsl(var(--bg-void))] relative overflow-hidden"
       style={{ 
         borderRight: "1px solid hsl(0 0% 100% / 0.07)",
         width: sidebarWidth,
@@ -64,6 +64,9 @@ export function Sidebar() {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
+      {/* Animated gradient line at top */}
+      <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-cyan-brand to-transparent opacity-60" />
+      
       {/* Logo Section */}
       <div className="flex items-center gap-3 px-2 mb-6">
         <div className="w-10 h-10 shrink-0 grid place-items-center rounded-lg bg-gradient-to-br from-[hsl(var(--accent-cyan)/0.2)] to-[hsl(var(--accent-cyan)/0.05)] border border-[hsl(var(--accent-cyan)/0.3)]">
@@ -145,7 +148,14 @@ export function Sidebar() {
                       transition={{ type: "spring", stiffness: 300, damping: 30 }}
                     />
                   )}
-                  <Icon size={20} strokeWidth={1.5} className="shrink-0" />
+                  <Icon 
+                    size={20} 
+                    strokeWidth={1.5} 
+                    className="shrink-0"
+                    style={{
+                      filter: isActive && !isExpanded ? "drop-shadow(0 0 10px hsl(var(--accent-cyan) / 0.6))" : "none"
+                    }}
+                  />
                   <AnimatePresence mode="wait">
                     {isExpanded && (
                       <motion.span
