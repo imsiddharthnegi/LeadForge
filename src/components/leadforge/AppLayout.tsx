@@ -128,14 +128,14 @@ export function AppLayout() {
 
       <motion.div 
         className="relative z-10 md:ml-0"
-        animate={{ marginLeft: isSidebarExpanded ? 220 : 64 }}
+        style={{ marginLeft: isSidebarExpanded ? 220 : 64 }}
         transition={{ duration: 0.2, ease: "easeInOut" }}
       >
         <ApiKeyBanner />
         <motion.div
           key={location.pathname}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ duration: 0.35, ease: [0.2, 0.8, 0.2, 1] }}
           className="md:pb-0 pb-24"
         >

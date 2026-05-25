@@ -16,7 +16,7 @@ export function ApiKeyBanner() {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -16 }}
       transition={{ duration: 0.4 }}
-      className="sticky top-0 z-50 mx-6 rounded-lg bg-gradient-to-r from-amber-brand/[0.15] to-orange-brand/[0.1] border border-amber-brand/40 px-4 py-3 flex items-center gap-3 shadow-lg"
+      className="relative z-50 mx-6 rounded-lg bg-gradient-to-r from-amber-brand/[0.15] to-orange-brand/[0.1] border border-amber-brand/40 px-4 py-3 flex items-center gap-3 shadow-lg"
     >
       <AlertCircle size={16} className="text-amber-brand shrink-0" />
       <div className="flex-1 min-w-0">
