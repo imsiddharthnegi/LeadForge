@@ -5,7 +5,7 @@ export function PageHeader({ eyebrow, title, subtitle, right }: {
   eyebrow: string; title: string; subtitle?: string; right?: ReactNode;
 }) {
   return (
-    <header className="px-6 lg:px-10 pt-8 pb-6 flex items-end justify-between gap-6 flex-wrap">
+    <header className="px-6 lg:px-10 pt-4 pb-3 flex items-end justify-between gap-6 flex-wrap">
       <div>
         <motion.span
           initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
