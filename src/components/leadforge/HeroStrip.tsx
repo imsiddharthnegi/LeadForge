@@ -30,9 +30,9 @@ export function HeroStrip() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15, duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
-          className="flex items-center gap-2 px-4 h-10 rounded-input bg-cyan-brand/10 hover:bg-cyan-brand/15 border border-cyan-brand/30 text-cyan-brand font-semibold text-sm transition-colors shrink-0"
+          className="flex items-center gap-2 px-4 h-10 rounded-input bg-cyan-brand hover:bg-cyan-brand/90 text-[#0d1117] font-bold text-sm transition-all shrink-0 active:scale-95 shadow-lg shadow-cyan-brand/10"
         >
-          <Plus size={16} />
+          <Plus size={16} strokeWidth={2.5} />
           <span>New Session</span>
         </motion.button>
       </div>

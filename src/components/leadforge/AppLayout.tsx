@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Sidebar } from "./Sidebar";
 import { BottomNav } from "./BottomNav";
-import { BackgroundCanvas } from "./BackgroundCanvas";
 import { ApiKeyBanner } from "./ApiKeyBanner";
 
 export function AppLayout() {
@@ -63,7 +62,6 @@ export function AppLayout() {
         style={{ originX: 0 }}
       />
       
-      <BackgroundCanvas />
       <div data-sidebar>
         <Sidebar isExpanded={isSidebarExpanded} onToggle={setIsSidebarExpanded} />
       </div>

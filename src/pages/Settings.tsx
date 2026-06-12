@@ -3,6 +3,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/leadforge/PageHeader";
 
 function SettingsCard({ title, description, delay = 0, children }: {
   title: string; description: string; delay?: number; children: React.ReactNode;
@@ -12,7 +13,7 @@ function SettingsCard({ title, description, delay = 0, children }: {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
-      className="bg-[hsl(var(--surface-2))] rounded-card border border-white/[0.07] p-6"
+      className="glass-card rounded-2xl p-6 relative overflow-hidden"
     >
       {/* Top border accent */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-brand/30 to-transparent" />
@@ -43,7 +44,7 @@ function TextInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
       {...props}
-      className="w-full h-10 px-3 rounded-input bg-[hsl(var(--surface-3))] border border-white/[0.07] text-sm focus:outline-none focus:border-cyan-brand/50 focus:ring-1 focus:ring-cyan-brand/20 transition-all placeholder:text-[hsl(var(--text-muted))]"
+      className="w-full h-10 px-3 rounded-input bg-white/[0.025] border border-white/[0.07] text-sm focus:outline-none focus:border-cyan-brand/50 focus:ring-2 focus:ring-cyan-brand/10 transition-all placeholder:text-[hsl(var(--text-muted))]"
     />
   );
 }
@@ -55,7 +56,7 @@ function Toggle({ value, onChange, label, hint }: {
     <button
       type="button"
       onClick={() => onChange(!value)}
-      className="flex items-center justify-between w-full px-4 h-12 rounded-input bg-[hsl(var(--surface-3))] border border-white/[0.07] hover:border-white/10 transition-colors text-left"
+      className="flex items-center justify-between w-full px-4 h-12 rounded-input bg-white/[0.02] border border-white/[0.06] hover:border-white/10 transition-colors text-left"
     >
       <div>
         <div className="text-sm font-medium text-foreground">{label}</div>
@@ -134,24 +135,14 @@ export default function SettingsPage() {
 
   return (
     <>
-      {/* Page Header */}
-      <header className="relative z-10 px-4 sm:px-6 lg:px-10 py-8 border-b border-white/[0.07]">
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
-        >
-          <h1 className="font-display text-3xl md:text-4xl font-semibold text-foreground tracking-tight">
-            Settings
-          </h1>
-          <p className="mt-2 text-base text-[hsl(var(--text-secondary))]">
-            Manage your API keys and preferences
-          </p>
-        </motion.div>
-      </header>
+      <PageHeader
+        eyebrow="Config"
+        title="Settings"
+        subtitle="Manage your API keys, profile, and preferences."
+      />
 
       {/* Main content */}
-      <main className="px-4 sm:px-6 lg:px-10 py-8 pb-20 max-w-2xl space-y-6">
+      <main className="px-4 sm:px-6 lg:px-10 pb-20 max-w-2xl space-y-5">
         {/* Profile Card */}
         <SettingsCard
           title="Profile"
@@ -168,12 +159,12 @@ export default function SettingsPage() {
           </div>
           <button
             onClick={() => toast.success("Profile updated")}
-            className="mt-4 w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 h-10 rounded-input bg-cyan-brand text-black font-semibold text-xs transition-all hover:bg-cyan-brand/90 active:scale-95"
+            className="mt-4 w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 h-10 rounded-input bg-cyan-brand text-[#0d1117] font-bold text-xs transition-all hover:bg-cyan-brand/90 active:scale-95 shadow-md shadow-cyan-brand/10"
           >
             <Check size={14} /> Save Changes
           </button>
         </SettingsCard>
-
+ 
         {/* API Configuration Card */}
         <SettingsCard
           title="API Configuration"
@@ -191,8 +182,8 @@ export default function SettingsPage() {
                 placeholder="Paste your gsk_... API key"
                 className={`flex-1 h-10 px-3 rounded-input border font-mono text-sm transition-all focus:outline-none ${
                   isReadOnly
-                    ? "bg-[hsl(var(--surface-3))]/50 border-white/[0.07] text-[hsl(var(--text-secondary))] cursor-default"
-                    : "bg-[hsl(var(--surface-3))] border-white/[0.07] focus:border-cyan-brand/50 focus:ring-1 focus:ring-cyan-brand/20"
+                    ? "bg-white/[0.015] border-white/[0.05] text-[hsl(var(--text-secondary))] cursor-default"
+                    : "bg-white/[0.025] border-white/[0.07] focus:border-cyan-brand/50 focus:ring-2 focus:ring-cyan-brand/10"
                 }`}
               />
               {isReadOnly && savedKey ? (
@@ -213,7 +204,7 @@ export default function SettingsPage() {
               ) : (
                 <button
                   onClick={handleSaveKey}
-                  className="h-10 px-3 rounded-input bg-cyan-brand text-black font-semibold text-xs whitespace-nowrap transition-all hover:bg-cyan-brand/90 active:scale-95"
+                  className="h-10 px-3 rounded-input bg-cyan-brand text-[#0d1117] font-bold text-xs whitespace-nowrap transition-all hover:bg-cyan-brand/90 active:scale-95 shadow-md shadow-cyan-brand/10"
                 >
                   Save Key
                 </button>

@@ -3,17 +3,15 @@ import { PageHeader } from "@/components/leadforge/PageHeader";
 import { Users, Activity, Star, TrendingUp, Sparkles, Building2, Briefcase, Stethoscope } from "lucide-react";
 
 const stats = [
-  { label: "Total Leads Generated", value: "1,284", icon: Users, accent: "cyan", delta: "+12.4%" },
-  { label: "Sessions Run", value: "47", icon: Activity, accent: "violet", delta: "+8 this week" },
-  { label: "Avg Quality Score", value: "78", icon: Star, accent: "amber", delta: "+3 vs last month" },
-  { label: "Top Niche", value: "SaaS Startups", icon: TrendingUp, accent: "green", delta: "32% of total" },
+  { label: "Total Leads Generated", value: "1,284", icon: Users, delta: "+12.4%", isPositive: true },
+  { label: "Sessions Run", value: "47", icon: Activity, delta: "+8 this week", isPositive: true },
+  { label: "Avg Quality Score", value: "78", icon: Star, delta: "+3 vs last month", isPositive: true },
+  { label: "Top Niche", value: "SaaS Startups", icon: TrendingUp, delta: "32% of total", isPositive: false },
 ];
 
-const accentMap: Record<string, { color: string; bg: string; border: string; glow: string }> = {
-  cyan:   { color: "hsl(var(--accent-cyan))",   bg: "hsl(var(--accent-cyan) / 0.1)",   border: "hsl(var(--accent-cyan) / 0.3)",   glow: "0 0 30px -5px hsl(var(--accent-cyan) / 0.4)" },
-  violet: { color: "hsl(var(--accent-violet))", bg: "hsl(var(--accent-violet) / 0.1)", border: "hsl(var(--accent-violet) / 0.3)", glow: "0 0 30px -5px hsl(var(--accent-violet) / 0.4)" },
-  amber:  { color: "hsl(var(--accent-amber))",  bg: "hsl(var(--accent-amber) / 0.1)",  border: "hsl(var(--accent-amber) / 0.3)",  glow: "0 0 30px -5px hsl(var(--accent-amber) / 0.4)" },
-  green:  { color: "hsl(var(--accent-green))",  bg: "hsl(var(--accent-green) / 0.1)",  border: "hsl(var(--accent-green) / 0.3)",  glow: "0 0 30px -5px hsl(var(--accent-green) / 0.4)" },
+const accentMap = {
+  cyan: { color: "hsl(var(--accent-cyan))", bg: "hsl(var(--accent-cyan) / 0.08)", border: "hsl(var(--accent-cyan) / 0.2)", glow: "0 0 24px -5px hsl(var(--accent-cyan) / 0.25)" },
+  green: { color: "hsl(var(--accent-green))" }
 };
 
 const activity = [
@@ -36,7 +34,8 @@ export default function Dashboard() {
         {/* Stat grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
           {stats.map((s, i) => {
-            const a = accentMap[s.accent];
+            const a = accentMap.cyan;
+            const trendColor = s.isPositive ? accentMap.green.color : a.color;
             const Icon = s.icon;
             return (
               <motion.div
@@ -58,7 +57,7 @@ export default function Dashboard() {
                   >
                     <Icon size={18} style={{ color: a.color }} strokeWidth={1.8} />
                   </span>
-                  <span className="font-mono text-[10px] uppercase tracking-wider" style={{ color: a.color }}>
+                  <span className="font-mono text-[10px] uppercase tracking-wider" style={{ color: trendColor }}>
                     {s.delta}
                   </span>
                 </div>

@@ -163,7 +163,7 @@ export function InputPanel({ state, setState, onGenerate, loading }: Props) {
           disabled={loading || !state.niche}
           onClick={onGenerate}
           whileTap={{ scale: 0.96 }}
-          className="relative w-full h-12 rounded-input font-semibold text-base text-black overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed transition-all bg-cyan-brand hover:bg-cyan-brand/90"
+          className="relative w-full h-12 rounded-input font-bold text-base text-[#0d1117] overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed transition-all bg-cyan-brand hover:bg-cyan-brand/90 shadow-lg shadow-cyan-brand/10"
         >
           <div className="flex items-center justify-center gap-2">
             <Zap size={16} strokeWidth={2} />

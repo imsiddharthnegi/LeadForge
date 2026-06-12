@@ -5,10 +5,11 @@ import {
   PieChart, Pie, Cell, BarChart, Bar, Legend,
 } from "recharts";
 
-const CYAN = "hsl(189 100% 50%)";
-const VIOLET = "hsl(262 83% 58%)";
-const AMBER = "hsl(38 92% 50%)";
-const GREEN = "hsl(158 76% 40%)";
+const CYAN = "hsl(189 82% 53%)";
+const SLATE_BLUE = "hsl(215 25% 40%)";
+const AMBER = "hsl(38 90% 60%)";
+const GRAY = "hsl(215 15% 65%)";
+const GRAY_MUTED = "hsl(215 12% 50%)";
 
 const lineData = [
   { session: "S1", score: 64 },
@@ -27,7 +28,7 @@ const donutData = [
   { name: "Healthcare", value: 14 },
   { name: "Other", value: 12 },
 ];
-const donutColors = [CYAN, VIOLET, AMBER, GREEN, "hsl(215 20% 45%)"];
+const donutColors = [CYAN, SLATE_BLUE, AMBER, GRAY, GRAY_MUTED];
 
 const barData = [
   { industry: "SaaS", score: 84 },
@@ -79,20 +80,14 @@ export default function Analytics() {
         <ChartCard title="Lead Quality — Last 7 Sessions" eyebrow="Trend" delay={0}>
           <ResponsiveContainer width="100%" height={260}>
             <LineChart data={lineData} margin={{ top: 8, right: 12, bottom: 0, left: -10 }}>
-              <defs>
-                <linearGradient id="cyanLine" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor={CYAN} />
-                  <stop offset="100%" stopColor={VIOLET} />
-                </linearGradient>
-              </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 100% / 0.06)" />
               <XAxis dataKey="session" stroke="hsl(215 20% 55%)" fontSize={11} tickLine={false} axisLine={false} />
               <YAxis stroke="hsl(215 20% 55%)" fontSize={11} tickLine={false} axisLine={false} domain={[40, 100]} />
               <Tooltip contentStyle={tooltipStyle} cursor={{ stroke: CYAN, strokeOpacity: 0.2 }} />
               <Line
-                type="monotone" dataKey="score" stroke="url(#cyanLine)" strokeWidth={2.5}
+                type="monotone" dataKey="score" stroke={CYAN} strokeWidth={2.5}
                 dot={{ r: 4, fill: CYAN, strokeWidth: 0 }}
-                activeDot={{ r: 6, fill: VIOLET, stroke: CYAN, strokeWidth: 2 }}
+                activeDot={{ r: 6, fill: CYAN, stroke: "hsl(215 28% 7%)", strokeWidth: 2 }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -123,17 +118,11 @@ export default function Analytics() {
           <ChartCard title="Avg Score by Industry" eyebrow="Comparison" delay={0.2}>
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={barData} margin={{ top: 8, right: 12, bottom: 0, left: -10 }}>
-                <defs>
-                  <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={CYAN} />
-                    <stop offset="100%" stopColor={VIOLET} />
-                  </linearGradient>
-                </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 100% / 0.06)" />
                 <XAxis dataKey="industry" stroke="hsl(215 20% 55%)" fontSize={11} tickLine={false} axisLine={false} />
                 <YAxis stroke="hsl(215 20% 55%)" fontSize={11} tickLine={false} axisLine={false} domain={[0, 100]} />
                 <Tooltip contentStyle={tooltipStyle} cursor={{ fill: "hsl(var(--accent-cyan) / 0.05)" }} />
-                <Bar dataKey="score" fill="url(#barGrad)" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="score" fill={CYAN} radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </ChartCard>

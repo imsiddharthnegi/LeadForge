@@ -133,14 +133,7 @@ export function Sidebar({ isExpanded = false, onToggle }: { isExpanded?: boolean
                   {isActive && (
                     <motion.span
                       layoutId="active-bg"
-                      className="absolute inset-0 rounded-input bg-cyan-brand/8 -z-10"
-                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    />
-                  )}
-                  {isActive && (
-                    <motion.span
-                      layoutId="active-border"
-                      className="absolute left-0 top-2 bottom-2 w-1 rounded-full bg-cyan-brand"
+                      className="absolute inset-0 rounded-input bg-cyan-brand/12 -z-10"
                       transition={{ type: "spring", stiffness: 300, damping: 30 }}
                     />
                   )}
@@ -161,11 +154,9 @@ export function Sidebar({ isExpanded = false, onToggle }: { isExpanded?: boolean
                   </AnimatePresence>
                 </NavLink>
               </TooltipTrigger>
-              {!isExpanded && (
-                <TooltipContent side="right" className="ml-2">
-                  {it.label}
-                </TooltipContent>
-              )}
+              <TooltipContent side="right" className="ml-2">
+                {it.label}
+              </TooltipContent>
             </Tooltip>
           );
         })}
@@ -200,11 +191,9 @@ export function Sidebar({ isExpanded = false, onToggle }: { isExpanded?: boolean
               </AnimatePresence>
             </button>
           </TooltipTrigger>
-          {!isExpanded && (
-            <TooltipContent side="right" className="ml-2">
-              {userName}
-            </TooltipContent>
-          )}
+          <TooltipContent side="right" className="ml-2">
+            {userName}
+          </TooltipContent>
         </Tooltip>
 
         {/* Settings Link */}
@@ -216,7 +205,7 @@ export function Sidebar({ isExpanded = false, onToggle }: { isExpanded?: boolean
                 isExpanded ? "" : "px-0"
               } ${
                 location.pathname === "/settings"
-                  ? "text-cyan-brand bg-cyan-brand/8"
+                  ? "text-cyan-brand bg-cyan-brand/12"
                   : "text-[hsl(var(--text-secondary))] hover:text-foreground hover:bg-white/[0.04]"
               }`}
             >
@@ -237,11 +226,9 @@ export function Sidebar({ isExpanded = false, onToggle }: { isExpanded?: boolean
               </AnimatePresence>
             </NavLink>
           </TooltipTrigger>
-          {!isExpanded && (
-            <TooltipContent side="right" className="ml-2">
-              Settings
-            </TooltipContent>
-          )}
+          <TooltipContent side="right" className="ml-2">
+            Settings
+          </TooltipContent>
         </Tooltip>
       </div>
     </motion.aside>

@@ -1,5 +1,6 @@
 import { Grid3x3 } from "lucide-react";
 import { motion } from "framer-motion";
+import { NetworkGraphVisual } from "./NetworkGraphVisual";
 
 export function EmptyState() {
   return (
@@ -9,15 +10,7 @@ export function EmptyState() {
       transition={{ delay: 0.3, duration: 0.5 }}
       className="relative w-full min-h-[400px] flex flex-col items-center justify-center"
     >
-      {/* Icon */}
-      <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 0.4, duration: 0.5 }}
-        className="mb-6"
-      >
-        <Grid3x3 size={48} className="text-[hsl(var(--text-muted))]" strokeWidth={1} />
-      </motion.div>
+      <NetworkGraphVisual className="opacity-80" />
 
       {/* Heading */}
       <motion.h3

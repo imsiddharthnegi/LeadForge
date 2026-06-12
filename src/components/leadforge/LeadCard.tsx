@@ -4,22 +4,14 @@ import type { Lead } from "@/lib/gemini";
 import { Mail, Phone, ExternalLink, Copy, Heart, Quote } from "lucide-react";
 import { toast } from "sonner";
 
-function scoreColor(s: number) {
-  if (s >= 70) return "hsl(var(--accent-green))";
-  if (s >= 40) return "hsl(var(--accent-amber))";
-  return "hsl(var(--accent-red))";
-}
-
-function scoreBg(s: number) {
-  if (s >= 70) return "bg-green-500/10";
-  if (s >= 40) return "bg-amber-500/10";
-  return "bg-red-500/10";
-}
-
-function scoreBorder(s: number) {
-  if (s >= 70) return "border-green-500/30";
-  if (s >= 40) return "border-amber-500/30";
-  return "border-red-500/30";
+function getScoreClass(s: number) {
+  if (s >= 75) {
+    return "bg-emerald-500/20 text-emerald-400 border-emerald-500/30";
+  }
+  if (s >= 50) {
+    return "bg-amber-500/20 text-amber-400 border-amber-500/30";
+  }
+  return "bg-white/10 text-white/70 border-white/10";
 }
 
 interface Props {
@@ -43,12 +35,12 @@ export function LeadCard({ lead, index, saved, onToggleSave }: Props) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.08, duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-      className="group relative bg-[hsl(var(--surface-2))] rounded-card border border-white/[0.07] hover:border-cyan-brand/30 transition-all duration-200 p-6"
+      className="group relative bg-[hsl(var(--surface-2))] rounded-card border border-white/[0.05] hover:border-cyan-brand/30 transition-all duration-200 p-6"
     >
       {/* Header: Company name + Quality score pill */}
       <div className="flex items-start justify-between gap-4 mb-5">
         <div className="flex-1 min-w-0">
-          <h3 className="text-base font-semibold text-foreground leading-tight truncate">
+          <h3 className="font-display text-base font-semibold text-foreground leading-tight truncate">
             {lead.company_name}
           </h3>
           {lead.website && (
@@ -62,9 +54,9 @@ export function LeadCard({ lead, index, saved, onToggleSave }: Props) {
             </a>
           )}
         </div>
-
+ 
         {/* Quality score badge */}
-        <div className={`px-3 py-1 rounded-badge text-xs font-bold text-white ${scoreBg(lead.quality_score)} border ${scoreBorder(lead.quality_score)} shrink-0`}>
+        <div className={`font-display px-2.5 py-0.5 rounded-badge text-xs font-bold border shrink-0 ${getScoreClass(lead.quality_score)}`}>
           {lead.quality_score}
         </div>
       </div>

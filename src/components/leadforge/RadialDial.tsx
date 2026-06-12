@@ -67,8 +67,8 @@ export function RadialDial({ value, min = 3, max = 15, onChange }: Props) {
         >
           <defs>
             <linearGradient id="dialGrad" x1="0" x2="1">
-              <stop offset="0%" stopColor="hsl(var(--accent-cyan))" />
-              <stop offset="100%" stopColor="hsl(var(--accent-violet))" />
+              <stop offset="0%" stopColor="#22d3ee" />
+              <stop offset="100%" stopColor="#67e8f9" />
             </linearGradient>
           </defs>
           <path d={trackPath} stroke="hsl(0 0% 100% / 0.06)" strokeWidth={6} fill="none" strokeLinecap="round" />
