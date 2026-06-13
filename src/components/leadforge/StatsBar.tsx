@@ -78,7 +78,7 @@ export function StatsBar({ total, avg, high, hot, onExport, onCopyHooks }: Props
           onClick={onCopyHooks}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.96 }}
-          className="inline-flex items-center justify-center gap-2 px-5 h-11 rounded-lg bg-white/[0.05] hover:bg-white/10 border border-white/[0.1] text-foreground font-semibold text-sm transition-all active:scale-95 w-full md:w-auto"
+          className="inline-flex items-center justify-center gap-2 px-5 h-11 rounded-lg bg-[#1a1f28] hover:bg-[#222836] border border-white/[0.1] text-foreground font-semibold text-sm transition-all active:scale-95 w-full md:w-auto"
         >
           <Copy size={16} /> Copy All Hooks
         </motion.button>

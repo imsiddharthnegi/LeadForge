@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { PageHeader } from "@/components/leadforge/PageHeader";
 import { LeadCard } from "@/components/leadforge/LeadCard";
 import type { Lead } from "@/lib/gemini";
-import { Search, Filter } from "lucide-react";
+import { Search, Filter, ChevronDown, Bookmark } from "lucide-react";
 
 const dummy: Lead[] = [
   {
@@ -69,23 +70,111 @@ const dummy: Lead[] = [
 ];
 
 const SAVED_KEY = "leadforge_saved_ids";
+const TIMESTAMPS_KEY = "leadforge_saved_timestamps";
+
+const getSavedTimestamps = (): Record<string, number> => {
+  try { return JSON.parse(localStorage.getItem(TIMESTAMPS_KEY) || "{}"); } catch { return {}; }
+};
+
+const getOrSeedTimestamps = (ids: Set<string>): Record<string, number> => {
+  const stored = getSavedTimestamps();
+  let updated = { ...stored };
+  let neededUpdate = false;
+
+  const now = Date.now();
+  const dayMs = 24 * 60 * 60 * 1000;
+  const seedTimes: Record<string, number> = {
+    s1: now - 1 * dayMs,
+    s2: now - 2 * dayMs,
+    s3: now - 3 * dayMs,
+    s4: now - 5 * dayMs,
+    s5: now - 7 * dayMs,
+    s6: now - 10 * dayMs,
+  };
+
+  ids.forEach((id) => {
+    if (!updated[id]) {
+      updated[id] = seedTimes[id] || now;
+      neededUpdate = true;
+    }
+  });
+
+  if (neededUpdate) {
+    localStorage.setItem(TIMESTAMPS_KEY, JSON.stringify(updated));
+  }
+  return updated;
+};
+
+const getDaysAgoText = (timestamp: number) => {
+  const diffMs = Date.now() - timestamp;
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  if (diffDays <= 0) {
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    if (diffHours <= 0) {
+      return "saved just now";
+    }
+    return `saved ${diffHours}h ago`;
+  }
+  if (diffDays === 1) return "saved 1 day ago";
+  return `saved ${diffDays} days ago`;
+};
+
+const getLeadNiche = (lead: Lead): string => {
+  if (lead.tags.includes("SaaS")) return "SaaS Startups";
+  if (lead.tags.includes("E-commerce") || lead.tags.includes("DTC")) return "E-commerce";
+  if (lead.tags.includes("Agency")) return "Agencies";
+  if (lead.tags.includes("Healthcare")) return "Healthcare";
+  if (lead.tags.includes("Legal")) return "Legal Services";
+  if (lead.tags.includes("Fitness")) return "Fitness & Wellness";
+  return "Other Niches";
+};
 
 export default function SavedLeads() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "high" | "hot">("all");
+  const [sort, setSort] = useState<"date-desc" | "score-desc" | "name-asc">("date-desc");
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
+
   const [savedIds, setSavedIds] = useState<Set<string>>(() => {
-    try { return new Set(JSON.parse(localStorage.getItem(SAVED_KEY) || "[]")); } catch { return new Set(); }
+    try {
+      const stored = localStorage.getItem(SAVED_KEY);
+      if (stored === null) {
+        // If not initialized, pre-fill with dummy IDs for demo
+        const dummyIds = dummy.map((l) => l._id!);
+        localStorage.setItem(SAVED_KEY, JSON.stringify(dummyIds));
+        return new Set(dummyIds);
+      }
+      return new Set(JSON.parse(stored));
+    } catch {
+      return new Set(dummy.map((l) => l._id!));
+    }
+  });
+
+  const [timestamps, setTimestamps] = useState<Record<string, number>>(() => {
+    return getOrSeedTimestamps(savedIds);
   });
 
   const toggleSave = (id: string) => {
-    const next = new Set(savedIds);
-    next.has(id) ? next.delete(id) : next.add(id);
-    setSavedIds(next);
-    localStorage.setItem(SAVED_KEY, JSON.stringify([...next]));
+    const nextIds = new Set(savedIds);
+    const nextTimestamps = { ...timestamps };
+
+    if (nextIds.has(id)) {
+      nextIds.delete(id);
+      delete nextTimestamps[id];
+    } else {
+      nextIds.add(id);
+      nextTimestamps[id] = Date.now();
+    }
+
+    setSavedIds(nextIds);
+    setTimestamps(nextTimestamps);
+    localStorage.setItem(SAVED_KEY, JSON.stringify([...nextIds]));
+    localStorage.setItem(TIMESTAMPS_KEY, JSON.stringify(nextTimestamps));
   };
 
   const filtered = useMemo(() => {
-    let out = dummy.slice();
+    let out = dummy.filter((l) => savedIds.has(l._id!));
     if (filter === "high") out = out.filter((l) => l.quality_score >= 75);
     if (filter === "hot") out = out.filter((l) => l.quality_score >= 90);
     if (search.trim()) {
@@ -96,8 +185,38 @@ export default function SavedLeads() {
         l.tags.some((t) => t.toLowerCase().includes(q))
       );
     }
+
+    // Apply sorting
+    if (sort === "score-desc") {
+      out.sort((a, b) => b.quality_score - a.quality_score);
+    } else if (sort === "name-asc") {
+      out.sort((a, b) => a.company_name.localeCompare(b.company_name));
+    } else {
+      // date-desc
+      out.sort((a, b) => (timestamps[b._id!] || 0) - (timestamps[a._id!] || 0));
+    }
+
     return out;
-  }, [search, filter]);
+  }, [search, filter, sort, savedIds, timestamps]);
+
+  const grouped = useMemo(() => {
+    const groups: Record<string, Lead[]> = {};
+    filtered.forEach((lead) => {
+      const niche = getLeadNiche(lead);
+      if (!groups[niche]) {
+        groups[niche] = [];
+      }
+      groups[niche].push(lead);
+    });
+    return groups;
+  }, [filtered]);
+
+  const toggleGroup = (niche: string) => {
+    setCollapsedGroups((prev) => ({
+      ...prev,
+      [niche]: !prev[niche],
+    }));
+  };
 
   const FilterChip = ({ id, label }: { id: typeof filter; label: string }) => (
     <button
@@ -124,7 +243,7 @@ export default function SavedLeads() {
       <main className="px-4 sm:px-6 lg:px-10 pb-20">
         <motion.div
           initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-          className="glass-card rounded-2xl p-3 mb-6 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3"
+          className="glass-card rounded-2xl p-3 mb-6 flex flex-col lg:flex-row lg:items-center gap-2 sm:gap-3"
         >
           <div className="flex items-center gap-2 px-3 h-9 rounded-md bg-white/[0.025] border border-white/[0.06] flex-1 min-w-0">
             <Search size={14} className="text-[hsl(var(--text-secondary))] shrink-0" />
@@ -135,35 +254,107 @@ export default function SavedLeads() {
               className="flex-1 bg-transparent text-sm focus:outline-none"
             />
           </div>
-          <div className="flex items-center gap-1 p-1 rounded-lg bg-white/[0.02] border border-white/[0.06] overflow-x-auto">
-            <span className="grid place-items-center w-8 h-9 shrink-0">
-              <Filter size={13} className="text-[hsl(var(--text-secondary))]" />
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-1 p-1 rounded-lg bg-white/[0.02] border border-white/[0.06]">
+              <span className="grid place-items-center w-8 h-9 shrink-0">
+                <Filter size={13} className="text-[hsl(var(--text-secondary))]" />
+              </span>
+              <FilterChip id="all" label="All" />
+              <FilterChip id="high" label="High (75+)" />
+              <FilterChip id="hot" label="Hot (90+)" />
+            </div>
+
+            {/* Sort Dropdown styled to match Index.tsx dropdown */}
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value as any)}
+              className="h-9 px-3 rounded-md bg-white/[0.025] border border-white/[0.06] text-xs font-mono focus:outline-none focus:border-cyan-brand/50 text-[hsl(var(--text-secondary))] focus:text-foreground cursor-pointer"
+            >
+              <option value="date-desc">Date Saved</option>
+              <option value="score-desc">Score (High to Low)</option>
+              <option value="name-asc">Company Name (A-Z)</option>
+            </select>
+
+            <span className="text-[10px] font-mono text-[hsl(var(--text-muted))] px-2 shrink-0 lg:ml-auto">
+              {filtered.length} of {savedIds.size}
             </span>
-            <FilterChip id="all" label="All" />
-            <FilterChip id="high" label="High (75+)" />
-            <FilterChip id="hot" label="Hot (90+)" />
           </div>
-          <span className="text-[10px] font-mono text-[hsl(var(--text-muted))] px-2 shrink-0">
-            {filtered.length} of {dummy.length}
-          </span>
         </motion.div>
 
-        <div className="space-y-4">
-          {filtered.map((l, i) => (
-            <LeadCard
-              key={l._id}
-              lead={l}
-              index={i}
-              saved={savedIds.has(l._id!) || true}
-              onToggleSave={() => toggleSave(l._id!)}
-            />
-          ))}
-          {filtered.length === 0 && (
-            <div className="glass-card rounded-xl p-10 text-center text-sm text-[hsl(var(--text-secondary))]">
-              No saved leads match your filters.
+        {savedIds.size === 0 ? (
+          <div className="glass-card rounded-2xl p-12 text-center border border-white/[0.08] bg-[#1a1f28] max-w-lg mx-auto mt-8 flex flex-col items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-cyan-brand/10 flex items-center justify-center text-cyan-brand border border-cyan-brand/20">
+              <Bookmark size={22} className="text-cyan-brand" />
             </div>
-          )}
-        </div>
+            <div>
+              <h3 className="font-display text-base font-semibold text-white mb-1">No saved leads yet</h3>
+              <p className="text-sm text-[hsl(var(--text-secondary))] leading-relaxed">
+                Generate leads and tap the heart icon to save promising ones here in your library.
+              </p>
+            </div>
+            <button
+              onClick={() => navigate("/")}
+              className="mt-2 h-9 px-4 rounded-md bg-cyan-brand text-black text-xs font-semibold hover:bg-cyan-brand/90 transition-colors shadow-lg active:scale-95"
+            >
+              Go to Lead Generator
+            </button>
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="glass-card rounded-xl p-10 text-center text-sm text-[hsl(var(--text-secondary))]">
+            No saved leads match your filters.
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {Object.entries(grouped).map(([niche, groupLeads]) => {
+              const isCollapsed = collapsedGroups[niche];
+              return (
+                <div key={niche} className="space-y-4">
+                  {/* Group Header */}
+                  <div
+                    onClick={() => toggleGroup(niche)}
+                    className="flex items-center justify-between cursor-pointer py-2.5 px-4 rounded-xl bg-white/[0.01] hover:bg-white/[0.03] border border-white/[0.02] hover:border-white/[0.05] transition-all group select-none"
+                  >
+                    <div className="flex items-center gap-2">
+                      <ChevronDown
+                        size={14}
+                        className={`text-cyan-brand transition-transform duration-200 ${
+                          isCollapsed ? "-rotate-90" : "rotate-0"
+                        }`}
+                      />
+                      <span className="font-mono text-xs tracking-wider text-slate-300 uppercase font-semibold">
+                        {niche}
+                      </span>
+                      <span className="text-[10px] font-mono font-bold bg-[#1a1f28] border border-white/8 text-cyan-brand px-2 py-0.5 rounded-full">
+                        {groupLeads.length}
+                      </span>
+                    </div>
+                    <div className="w-1/3 h-[1px] bg-gradient-to-r from-cyan-brand/10 to-transparent flex-1 ml-4 hidden sm:block"></div>
+                  </div>
+
+                  {/* Group Content */}
+                  {!isCollapsed && (
+                    <div className="space-y-4 pl-1 sm:pl-3 border-l border-white/[0.04]">
+                      {groupLeads.map((l) => {
+                        const globalIdx = filtered.findIndex((lead) => lead._id === l._id);
+                        const daysAgoText = timestamps[l._id!] ? getDaysAgoText(timestamps[l._id!]) : "";
+                        return (
+                          <LeadCard
+                            key={l._id}
+                            lead={l}
+                            index={globalIdx >= 0 ? globalIdx : 0}
+                            saved={true}
+                            onToggleSave={() => toggleSave(l._id!)}
+                            timestampText={daysAgoText}
+                          />
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </main>
     </>
   );

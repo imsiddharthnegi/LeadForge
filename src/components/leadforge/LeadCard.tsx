@@ -19,9 +19,10 @@ interface Props {
   index: number;
   saved: boolean;
   onToggleSave: () => void;
+  timestampText?: string;
 }
 
-export function LeadCard({ lead, index, saved, onToggleSave }: Props) {
+export function LeadCard({ lead, index, saved, onToggleSave, timestampText }: Props) {
   const [showEmailCopy, setShowEmailCopy] = useState(false);
   const [showPhoneCopy, setShowPhoneCopy] = useState(false);
 
@@ -147,20 +148,27 @@ export function LeadCard({ lead, index, saved, onToggleSave }: Props) {
           ))}
         </div>
 
-        {/* Save button */}
-        <motion.button
-          onClick={onToggleSave}
-          whileTap={{ scale: 0.85 }}
-          className={`grid place-items-center w-8 h-8 rounded-badge border transition-all ${
-            saved
-              ? "bg-red-500/15 border-red-500/30 text-red-500"
-              : "bg-white/[0.04] border-white/[0.1] text-[hsl(var(--text-secondary))] hover:text-foreground"
-          }`}
-        >
-          <motion.span animate={saved ? { scale: [1, 1.3, 1] } : {}} transition={{ duration: 0.3 }}>
-            <Heart size={16} fill={saved ? "currentColor" : "none"} />
-          </motion.span>
-        </motion.button>
+        {/* Save button and optional timestamp */}
+        <div className="flex items-center gap-3">
+          {timestampText && (
+            <span className="text-[10px] font-mono text-[hsl(var(--text-muted))] lowercase">
+              {timestampText}
+            </span>
+          )}
+          <motion.button
+            onClick={onToggleSave}
+            whileTap={{ scale: 0.85 }}
+            className={`grid place-items-center w-8 h-8 rounded-badge border transition-all ${
+              saved
+                ? "bg-red-500/15 border-red-500/30 text-red-500"
+                : "bg-white/[0.04] border-white/[0.1] text-[hsl(var(--text-secondary))] hover:text-foreground"
+            }`}
+          >
+            <motion.span animate={saved ? { scale: [1, 1.3, 1] } : {}} transition={{ duration: 0.3 }}>
+              <Heart size={16} fill={saved ? "currentColor" : "none"} />
+            </motion.span>
+          </motion.button>
+        </div>
       </div>
     </motion.div>
   );

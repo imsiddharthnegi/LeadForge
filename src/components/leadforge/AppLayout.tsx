@@ -53,14 +53,7 @@ export function AppLayout() {
 
   return (
     <div className="min-h-screen bg-[hsl(var(--bg-void))] text-foreground relative overflow-x-hidden">
-      {/* Animated gradient progress line */}
-      <motion.div
-        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-brand via-violet-brand to-cyan-brand z-50"
-        initial={{ scaleX: 0 }}
-        animate={{ scaleX: isLoading ? 1 : 0 }}
-        transition={{ duration: 0.4, ease: "easeInOut" }}
-        style={{ originX: 0 }}
-      />
+
       
       <div data-sidebar>
         <Sidebar isExpanded={isSidebarExpanded} onToggle={setIsSidebarExpanded} />
